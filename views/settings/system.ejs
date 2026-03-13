@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <%- include('../partials/sidebar', { currentPage, user }) %>
+
+  <div class="ml-56 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200 px-8 py-4">
+      <h1 class="text-xl font-bold text-gray-800">System Settings</h1>
+      <p class="text-xs text-gray-400 mt-0.5">EduManage system information and configuration</p>
+    </div>
+
+    <div class="p-8">
+      <!-- Tab Nav -->
+      <div class="flex gap-1 mb-6 bg-white border border-gray-100 rounded-xl p-1 w-fit shadow-sm">
+        <span class="px-5 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white">System</span>
+        <a href="/api/settings/profile" class="px-5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50 transition">Profile</a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- App Info -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 text-lg">🎓</div>
+            <div>
+              <h2 class="font-bold text-gray-800">Application Info</h2>
+              <p class="text-xs text-gray-400">Core system details</p>
+            </div>
+          </div>
+          <dl class="space-y-3">
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <dt class="text-sm text-gray-500">Application Name</dt>
+              <dd class="text-sm font-semibold text-gray-800">EduManage</dd>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <dt class="text-sm text-gray-500">Version</dt>
+              <dd class="text-sm font-semibold text-gray-800">1.0.0</dd>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <dt class="text-sm text-gray-500">Environment</dt>
+              <dd>
+                <span class="px-2 py-1 text-xs rounded-full font-medium
+                  <%= env === 'production' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600' %>">
+                  <%= env %>
+                </span>
+              </dd>
+            </div>
+            <div class="flex justify-between py-2">
+              <dt class="text-sm text-gray-500">Organisation</dt>
+              <dd class="text-sm font-semibold text-gray-800">Smackcoders Internship</dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Runtime Info -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 text-lg">⚙️</div>
+            <div>
+              <h2 class="font-bold text-gray-800">Runtime Info</h2>
+              <p class="text-xs text-gray-400">Server environment</p>
+            </div>
+          </div>
+          <dl class="space-y-3">
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <dt class="text-sm text-gray-500">Node.js Version</dt>
+              <dd class="text-sm font-semibold text-gray-800"><%= nodeVersion %></dd>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <dt class="text-sm text-gray-500">Platform</dt>
+              <dd class="text-sm font-semibold text-gray-800"><%= platform %></dd>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <dt class="text-sm text-gray-500">Uptime</dt>
+              <dd class="text-sm font-semibold text-gray-800">
+                <%= Math.floor(startTime / 3600) %>h <%= Math.floor((startTime % 3600) / 60) %>m <%= Math.floor(startTime % 60) %>s
+              </dd>
+            </div>
+            <div class="flex justify-between py-2">
+              <dt class="text-sm text-gray-500">Port</dt>
+              <dd class="text-sm font-semibold text-gray-800">3000</dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 text-lg">🛠️</div>
+            <div>
+              <h2 class="font-bold text-gray-800">Tech Stack</h2>
+              <p class="text-xs text-gray-400">Technologies powering EduManage</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <% [
+              ['Backend', 'NestJS + TypeScript'],
+              ['Database', 'PostgreSQL'],
+              ['ORM', 'TypeORM'],
+              ['Auth', 'JWT + Passport'],
+              ['Frontend', 'EJS + TailwindCSS'],
+              ['Charts', 'Chart.js'],
+            ].forEach(([label, value]) => { %>
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <div class="text-xs text-gray-400"><%= label %></div>
+                <div class="text-sm font-semibold text-gray-700 mt-0.5"><%= value %></div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Database Info -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 text-lg">🗄️</div>
+            <div>
+              <h2 class="font-bold text-gray-800">Database</h2>
+              <p class="text-xs text-gray-400">PostgreSQL configuration</p>
+            </div>
+          </div>
+          <dl class="space-y-3">
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <dt class="text-sm text-gray-500">Status</dt>
+              <dd><span class="px-2 py-1 text-xs rounded-full font-medium bg-green-50 text-green-600">🟢 Connected</span></dd>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <dt class="text-sm text-gray-500">Engine</dt>
+              <dd class="text-sm font-semibold text-gray-800">PostgreSQL</dd>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <dt class="text-sm text-gray-500">Tables</dt>
+              <dd class="text-sm font-semibold text-gray-800">7 (users, students, courses, enrollments, attendance, marks, logs)</dd>
+            </div>
+            <div class="flex justify-between py-2">
+              <dt class="text-sm text-gray-500">Sync Mode</dt>
+              <dd class="text-sm font-semibold text-gray-800">Auto-sync enabled</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

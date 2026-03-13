@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <%- include('../partials/sidebar', { currentPage, user }) %>
+
+  <div class="ml-56 min-h-screen">
+    <div class="bg-white border-b border-gray-200 px-8 py-4">
+      <h1 class="text-xl font-bold text-gray-800">Student Profile</h1>
+    </div>
+
+    <div class="p-8">
+      <!-- Profile Header -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold">
+              <%= student.name.charAt(0).toUpperCase() %>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-gray-800"><%= student.name %></h2>
+              <p class="text-gray-400 text-sm">STU-<%= String(student.id).padStart(4,'0') %></p>
+              <span class="px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full font-medium">ACTIVE</span>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <a href="/api/students/<%= student.id %>/edit"
+              class="border border-gray-200 text-gray-600 text-sm px-4 py-2 rounded-lg hover:bg-gray-50">
+              ✏️ Edit Profile
+            </a>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-4 mt-6">
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1">Enrolled Courses</div>
+            <div class="text-2xl font-bold text-gray-800"><%= student.enrollments?.length ?? 0 %></div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1">Attendance Records</div>
+            <div class="text-2xl font-bold text-gray-800"><%= student.attendance?.length ?? 0 %></div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1">Marks Records</div>
+            <div class="text-2xl font-bold text-gray-800"><%= student.marks?.length ?? 0 %></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Personal Info -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h3 class="font-semibold text-gray-800 mb-4">👤 Personal Information</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">Full Name</span>
+              <span class="text-gray-800 font-medium"><%= student.name %></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">Email</span>
+              <span class="text-blue-600"><%= student.email %></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">Age</span>
+              <span class="text-gray-800"><%= student.age %></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">Phone</span>
+              <span class="text-gray-800"><%= student.phone ?? '—' %></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">City</span>
+              <span class="text-gray-800"><%= student.city ?? '—' %></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">Department</span>
+              <span class="text-gray-800"><%= student.department %></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enrolled Courses -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h3 class="font-semibold text-gray-800 mb-4">📚 Enrolled Courses</h3>
+          <% if (!student.enrollments || student.enrollments.length === 0) { %>
+            <p class="text-gray-400 text-sm">No courses enrolled yet.</p>
+          <% } else { %>
+            <div class="space-y-2">
+              <% student.enrollments.forEach(enrollment => { %>
+                <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                  <span class="text-sm text-gray-800"><%= enrollment.course?.course_name %></span>
+                  <span class="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded-full">
+                    <%= enrollment.status %>
+                  </span>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Marks -->
+      <% if (student.marks && student.marks.length > 0) { %>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
+          <h3 class="font-semibold text-gray-800 mb-4">📝 Academic Records</h3>
+          <table class="w-full">
+            <thead>
+              <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
+                <th class="py-3 text-left">Course</th>
+                <th class="py-3 text-left">Exam Type</th>
+                <th class="py-3 text-left">Marks</th>
+                <th class="py-3 text-left">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% student.marks.forEach(mark => { %>
+                <tr class="border-b border-gray-50 text-sm">
+                  <td class="py-3 text-gray-800"><%= mark.course?.course_name %></td>
+                  <td class="py-3 text-gray-600"><%= mark.exam_type %></td>
+                  <td class="py-3 text-gray-800"><%= mark.marks_obtained %>/<%= mark.max_marks %></td>
+                  <td class="py-3">
+                    <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-full font-bold">
+                      <%= mark.grade ?? '—' %>
+                    </span>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

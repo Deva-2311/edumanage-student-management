@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <%- include('../partials/sidebar', { currentPage, user }) %>
+
+  <div class="ml-56 min-h-screen">
+    <div class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-bold text-gray-800">Attendance Management</h1>
+      <a href="/api/attendance/mark"
+        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+        + Mark Attendance
+      </a>
+    </div>
+
+    <div class="p-8">
+      <!-- Search + Date Filter -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <form method="GET" action="/api/attendance" class="flex gap-3">
+          <input type="text" name="search" value="<%= search %>"
+            placeholder="Search by student or course..."
+            class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          <input type="date" name="date" value="<%= date %>"
+            class="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          <button type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Filter</button>
+          <% if (search || date) { %>
+            <a href="/api/attendance" class="border border-gray-200 px-4 py-2 rounded-lg text-sm text-gray-600">Clear</a>
+          <% } %>
+        </form>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+        <table class="w-full">
+          <thead>
+            <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
+              <th class="px-6 py-4 text-left">Student</th>
+              <th class="px-6 py-4 text-left">Course</th>
+              <th class="px-6 py-4 text-left">Date</th>
+              <th class="px-6 py-4 text-left">Status</th>
+              <th class="px-6 py-4 text-left">Update</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (records.length === 0) { %>
+              <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-gray-400">
+                  No attendance records found.
+                  <a href="/api/attendance/mark" class="text-blue-600 hover:underline ml-1">Mark now?</a>
+                </td>
+              </tr>
+            <% } else { %>
+              <% records.forEach(record => { %>
+                <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs font-bold">
+                        <%= record.student?.name?.charAt(0).toUpperCase() %>
+                      </div>
+                      <span class="text-sm font-medium text-gray-800"><%= record.student?.name %></span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-600"><%= record.course?.course_name %></td>
+                  <td class="px-6 py-4 text-sm text-gray-500">
+                    <%= new Date(record.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 text-xs rounded-full font-medium
+                      <%= record.status === 'present' ? 'bg-green-50 text-green-600' :
+                          record.status === 'absent'  ? 'bg-red-50 text-red-500' :
+                          'bg-yellow-50 text-yellow-600' %>">
+                      <%= record.status.charAt(0).toUpperCase() + record.status.slice(1) %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <form method="POST" action="/api/attendance/<%= record.id %>/status">
+                      <select name="status" onchange="this.form.submit()"
+                        class="text-xs border border-gray-200 rounded px-2 py-1 text-gray-600 focus:outline-none">
+                        <option value="present" <%= record.status === 'present' ? 'selected' : '' %>>Present</option>
+                        <option value="absent"  <%= record.status === 'absent'  ? 'selected' : '' %>>Absent</option>
+                        <option value="late"    <%= record.status === 'late'    ? 'selected' : '' %>>Late</option>
+                      </select>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+          <span class="text-sm text-gray-400">
+            Showing <%= Math.min((page-1)*limit+1, total) %> to <%= Math.min(page*limit, total) %> of <%= total %> records
+          </span>
+          <div class="flex gap-2">
+            <% for(let i = 1; i <= totalPages; i++) { %>
+              <a href="/api/attendance?page=<%= i %>"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-sm
+                  <%= i === page ? 'bg-blue-600 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50' %>">
+                <%= i %>
+              </a>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-4 gap-4 p-6 border-t border-gray-100">
+          <div class="bg-green-50 rounded-lg p-4">
+            <div class="text-xs text-green-600 mb-1">PRESENT</div>
+            <div class="text-2xl font-bold text-gray-800"><%= present %></div>
+          </div>
+          <div class="bg-red-50 rounded-lg p-4">
+            <div class="text-xs text-red-500 mb-1">ABSENT</div>
+            <div class="text-2xl font-bold text-gray-800"><%= absent %></div>
+          </div>
+          <div class="bg-yellow-50 rounded-lg p-4">
+            <div class="text-xs text-yellow-600 mb-1">LATE</div>
+            <div class="text-2xl font-bold text-gray-800"><%= late %></div>
+          </div>
+          <div class="bg-blue-50 rounded-lg p-4">
+            <div class="text-xs text-blue-600 mb-1">ATTENDANCE RATE</div>
+            <div class="text-2xl font-bold text-gray-800"><%= rate %>%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,834 @@
+{
+  "info": {
+    "_postman_id": "edumanage-v1",
+    "name": "EduManage API",
+    "description": "Complete API collection for EduManage Student Management System\nBase URL: http://localhost:3000\n\nAuth: Login first (POST /auth/login) to get JWT cookie, then all subsequent requests use that cookie automatically in the browser.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/login",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Portal Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/",
+            "description": "Landing page — select Admin or Teacher portal"
+          }
+        },
+        {
+          "name": "Admin Login Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/login/admin",
+            "description": "Renders admin login form"
+          }
+        },
+        {
+          "name": "Teacher Login Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/login/teacher",
+            "description": "Renders teacher login form"
+          }
+        },
+        {
+          "name": "Login (Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "email",
+                  "value": "admin@edumanage.edu"
+                },
+                {
+                  "key": "password",
+                  "value": "admin123"
+                },
+                {
+                  "key": "role",
+                  "value": "admin"
+                }
+              ]
+            },
+            "description": "Login with admin credentials. Sets JWT cookie on success and redirects to /dashboard."
+          }
+        },
+        {
+          "name": "Register New User",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Teacher\",\n  \"email\": \"john@edumanage.edu\",\n  \"password\": \"teacher123\",\n  \"role\": \"teacher\"\n}"
+            },
+            "description": "Register a new user (admin or teacher). Returns success message."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/logout",
+            "description": "Clears JWT cookie and redirects to portal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/dashboard",
+            "description": "Main dashboard with stats: total students, courses, enrollments, attendance rate, recent logs, recent enrollments."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "List Students",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/students?search=&page=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name/email/department"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Paginated student list with optional search"
+          }
+        },
+        {
+          "name": "Add Student Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/students/add"
+          }
+        },
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/students/add",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Alice Johnson"
+                },
+                {
+                  "key": "email",
+                  "value": "alice@student.edu"
+                },
+                {
+                  "key": "age",
+                  "value": "20"
+                },
+                {
+                  "key": "department",
+                  "value": "Computer Science"
+                },
+                {
+                  "key": "phone",
+                  "value": "9876543210"
+                },
+                {
+                  "key": "city",
+                  "value": "Chennai"
+                }
+              ]
+            },
+            "description": "Create a new student. Also fires webhook if WEBHOOK_URL is configured."
+          }
+        },
+        {
+          "name": "Student Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/students/1",
+            "description": "Get student profile with enrollments, attendance, and marks"
+          }
+        },
+        {
+          "name": "Edit Student Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/students/1/edit"
+          }
+        },
+        {
+          "name": "Update Student",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/students/1/edit",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Alice Johnson Updated"
+                },
+                {
+                  "key": "email",
+                  "value": "alice@student.edu"
+                },
+                {
+                  "key": "age",
+                  "value": "21"
+                },
+                {
+                  "key": "department",
+                  "value": "Computer Science"
+                },
+                {
+                  "key": "phone",
+                  "value": "9876543210"
+                },
+                {
+                  "key": "city",
+                  "value": "Chennai"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Student",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/students/1/delete",
+            "description": "Delete student by ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "List Courses",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/courses?search=&page=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Course Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/courses/add"
+          }
+        },
+        {
+          "name": "Create Course",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/courses/add",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "course_code",
+                  "value": "CS101"
+                },
+                {
+                  "key": "course_name",
+                  "value": "Introduction to Computer Science"
+                },
+                {
+                  "key": "department",
+                  "value": "Computer Science"
+                },
+                {
+                  "key": "instructor",
+                  "value": "Dr. Kumar"
+                },
+                {
+                  "key": "description",
+                  "value": "Fundamentals of CS"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Edit Course Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/courses/1/edit"
+          }
+        },
+        {
+          "name": "Update Course",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/courses/1/edit",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "course_code",
+                  "value": "CS101"
+                },
+                {
+                  "key": "course_name",
+                  "value": "Intro to CS (Updated)"
+                },
+                {
+                  "key": "department",
+                  "value": "Computer Science"
+                },
+                {
+                  "key": "instructor",
+                  "value": "Dr. Kumar"
+                },
+                {
+                  "key": "description",
+                  "value": "Updated description"
+                },
+                {
+                  "key": "is_active",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Course",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/courses/1/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enrollment",
+      "item": [
+        {
+          "name": "List Enrollments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/enrollment?page=1&search=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "enrollment"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Enroll Student",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/enrollment",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "student_id",
+                  "value": "1"
+                },
+                {
+                  "key": "course_id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Enroll a student in a course. Status defaults to 'active'."
+          }
+        },
+        {
+          "name": "Update Enrollment Status",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/enrollment/1/status",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "status",
+                  "value": "completed",
+                  "description": "active | completed | dropped"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Enrollment",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/enrollment/1/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "List Attendance",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/attendance?page=1&search=&date=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "attendance"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "date",
+                  "value": "",
+                  "description": "Filter by date (YYYY-MM-DD)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mark Attendance Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/attendance/mark"
+          }
+        },
+        {
+          "name": "Mark Attendance",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/attendance/mark",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "student_id",
+                  "value": "1"
+                },
+                {
+                  "key": "course_id",
+                  "value": "1"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-03-13"
+                },
+                {
+                  "key": "status",
+                  "value": "present",
+                  "description": "present | absent | late"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Attendance Status",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/attendance/1/status",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "status",
+                  "value": "late",
+                  "description": "present | absent | late"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Marks",
+      "item": [
+        {
+          "name": "List Marks",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/marks?page=1&search=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marks"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Marks Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/marks/add"
+          }
+        },
+        {
+          "name": "Add Marks",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/marks/add",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "student_id",
+                  "value": "1"
+                },
+                {
+                  "key": "course_id",
+                  "value": "1"
+                },
+                {
+                  "key": "exam_type",
+                  "value": "Mid Term",
+                  "description": "e.g. Mid Term, Final Exam, Quiz"
+                },
+                {
+                  "key": "marks_obtained",
+                  "value": "85"
+                },
+                {
+                  "key": "max_marks",
+                  "value": "100"
+                }
+              ]
+            },
+            "description": "Grade is auto-calculated: 90-100=A+, 80-89=A, 70-79=B, 60-69=C, 50-59=D, <50=F"
+          }
+        },
+        {
+          "name": "Edit Marks Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/marks/1/edit"
+          }
+        },
+        {
+          "name": "Update Marks",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/marks/1/edit",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "exam_type",
+                  "value": "Final Exam"
+                },
+                {
+                  "key": "marks_obtained",
+                  "value": "92"
+                },
+                {
+                  "key": "max_marks",
+                  "value": "100"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Marks",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/marks/1/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Logs",
+      "item": [
+        {
+          "name": "View Logs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/logs?page=1&module=&status=&search=&dateFrom=&dateTo=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "logs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "module",
+                  "value": "",
+                  "description": "Students | Courses | Enrollment | Attendance | Marks | Auth | Settings"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "success | error"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by user, action, module"
+                },
+                {
+                  "key": "dateFrom",
+                  "value": "",
+                  "description": "YYYY-MM-DD"
+                },
+                {
+                  "key": "dateTo",
+                  "value": "",
+                  "description": "YYYY-MM-DD"
+                }
+              ]
+            },
+            "description": "Admin-only. View paginated audit logs with filters."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Settings (redirect)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/settings",
+            "description": "Redirects to /settings/system"
+          }
+        },
+        {
+          "name": "System Info",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/settings/system",
+            "description": "App info, Node.js runtime, DB status, tech stack"
+          }
+        },
+        {
+          "name": "Profile Page",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/settings/profile"
+          }
+        },
+        {
+          "name": "Update Profile Name",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/settings/profile",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "New Name"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/settings/password",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "current_password",
+                  "value": "admin123"
+                },
+                {
+                  "key": "new_password",
+                  "value": "newpassword123"
+                },
+                {
+                  "key": "confirm_password",
+                  "value": "newpassword123"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

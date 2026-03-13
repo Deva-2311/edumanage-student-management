@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>EduManage — Select Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .portal-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .portal-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex items-center justify-center px-4">
+
+  <div class="w-full max-w-5xl">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-2xl shadow-lg">🎓</div>
+        <span class="text-3xl font-bold text-white">EduManage</span>
+      </div>
+      <p class="text-blue-300 text-lg">Student Management System</p>
+      <p class="text-slate-400 text-sm mt-1">Choose your portal to continue</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <!-- Admin -->
+      <a href="/api/login/admin" class="portal-card block bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 text-center hover:border-blue-400/60 hover:bg-white/15 cursor-pointer">
+        <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-5 shadow-lg">🛡️</div>
+        <h2 class="text-xl font-bold text-white mb-2">Admin Portal</h2>
+        <p class="text-slate-400 text-sm mb-6 leading-relaxed">Full system access. Manage students, courses, staff, and system settings.</p>
+        <span class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+          Sign In →
+        </span>
+      </a>
+
+      <!-- Teacher -->
+      <a href="/api/login/teacher" class="portal-card block bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 text-center hover:border-emerald-400/60 hover:bg-white/15 cursor-pointer">
+        <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-5 shadow-lg">👩‍🏫</div>
+        <h2 class="text-xl font-bold text-white mb-2">Teacher Portal</h2>
+        <p class="text-slate-400 text-sm mb-6 leading-relaxed">Mark attendance, view student records, courses, and manage your profile.</p>
+        <span class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+          Sign In →
+        </span>
+      </a>
+
+      <!-- Student -->
+      <a href="/api/login/student" class="portal-card block bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 text-center hover:border-purple-400/60 hover:bg-white/15 cursor-pointer">
+        <div class="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-5 shadow-lg">🎒</div>
+        <h2 class="text-xl font-bold text-white mb-2">Student Portal</h2>
+        <p class="text-slate-400 text-sm mb-6 leading-relaxed">View your academic profile, marks, attendance records, and enrolled courses.</p>
+        <span class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+          Sign In →
+        </span>
+      </a>
+
+    </div>
+
+    <p class="text-center text-slate-500 text-xs mt-10">© 2026 EduManage · Smackcoders Internship Project</p>
+  </div>
+</body>
+</html>

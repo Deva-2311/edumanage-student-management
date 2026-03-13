@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <%- include('../partials/sidebar', { currentPage, user }) %>
+
+  <div class="ml-56 min-h-screen">
+    <div class="bg-white border-b border-gray-200 px-8 py-4">
+      <div class="text-xs text-gray-400 mb-1">Marks › Edit</div>
+      <h1 class="text-xl font-bold text-gray-800">Edit Marks</h1>
+      <p class="text-gray-400 text-sm">Update marks for <%= mark.student?.name %></p>
+    </div>
+
+    <div class="p-8">
+      <% if (error) { %>
+        <div class="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-6 text-sm"><%= error %></div>
+      <% } %>
+
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 max-w-2xl">
+
+        <!-- Info Banner -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-6 flex gap-4">
+          <div>
+            <div class="text-xs text-gray-400">Student</div>
+            <div class="font-semibold text-gray-800"><%= mark.student?.name %></div>
+          </div>
+          <div class="border-l border-gray-200 pl-4">
+            <div class="text-xs text-gray-400">Course</div>
+            <div class="font-semibold text-gray-800"><%= mark.course?.course_name %></div>
+          </div>
+          <div class="border-l border-gray-200 pl-4">
+            <div class="text-xs text-gray-400">Current Grade</div>
+            <div class="font-bold text-blue-600 text-lg"><%= mark.grade %></div>
+          </div>
+        </div>
+
+        <form method="POST" action="/api/marks/<%= mark.id %>/edit">
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Exam Type</label>
+              <select name="exam_type" required
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <% ['Midterm','Final Exam','Assignment','Quiz','Lab','Project'].forEach(type => { %>
+                  <option <%= mark.exam_type === type ? 'selected' : '' %>><%= type %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Maximum Marks</label>
+              <input type="number" name="max_marks" value="<%= mark.max_marks %>" required
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+            </div>
+            <div class="col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Marks Obtained</label>
+              <input type="number" name="marks_obtained" value="<%= mark.marks_obtained %>"
+                oninput="calculateGrade()" required step="0.01"
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+            </div>
+          </div>
+
+          <!-- Live Grade Preview -->
+          <div class="mt-4 bg-blue-50 rounded-lg p-4 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-blue-600 font-semibold uppercase mb-1">Updated Grade</div>
+              <div class="text-2xl font-bold text-blue-700" id="gradeDisplay"><%= mark.grade %></div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between mt-6">
+            <div class="flex gap-4">
+              <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition text-sm">
+                Update Marks
+              </button>
+              <a href="/api/marks"
+                class="border border-gray-200 text-gray-600 font-medium px-6 py-2.5 rounded-lg text-sm hover:bg-gray-50">
+                Cancel
+              </a>
+            </div>
+            <form method="POST" action="/api/marks/<%= mark.id %>/delete"
+              onsubmit="return confirm('Delete this mark record?')">
+              <button type="submit" class="text-red-500 hover:text-red-600 text-sm font-medium">
+                Delete Record
+              </button>
+            </form>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calculateGrade() {
+      const marks = parseFloat(document.querySelector('[name="marks_obtained"]').value);
+      const max = parseFloat(document.querySelector('[name="max_marks"]').value) || 100;
+      const display = document.getElementById('gradeDisplay');
+      if (isNaN(marks)) { display.textContent = '--'; return; }
+      const pct = (marks / max) * 100;
+      if (pct >= 90)      { display.textContent = 'A+'; display.className = 'text-2xl font-bold text-green-700'; }
+      else if (pct >= 80) { display.textContent = 'A';  display.className = 'text-2xl font-bold text-green-600'; }
+      else if (pct >= 70) { display.textContent = 'B';  display.className = 'text-2xl font-bold text-blue-600'; }
+      else if (pct >= 60) { display.textContent = 'C';  display.className = 'text-2xl font-bold text-yellow-600'; }
+      else if (pct >= 50) { display.textContent = 'D';  display.className = 'text-2xl font-bold text-orange-500'; }
+      else                { display.textContent = 'F';  display.className = 'text-2xl font-bold text-red-500'; }
+    }
+  </script>
+</body>
+</html>
+

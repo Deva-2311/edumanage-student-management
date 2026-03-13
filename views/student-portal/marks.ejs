@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %> — EduManage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Student Sidebar -->
+  <div class="fixed left-0 top-0 h-full w-56 bg-white border-r border-gray-200 flex flex-col z-10">
+    <div class="px-6 py-5 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white text-sm">🎓</div>
+        <div><div class="font-bold text-gray-800 text-sm">EduManage</div><div class="text-xs text-purple-500">Student Portal</div></div>
+      </div>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1">
+      <a href="/api/student-portal" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"><span>📊</span> My Dashboard</a>
+      <a href="/api/student-portal/marks" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium bg-purple-50 text-purple-600"><span>📝</span> My Marks</a>
+      <a href="/api/student-portal/attendance" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"><span>✅</span> My Attendance</a>
+    </nav>
+    <div class="px-4 py-4 border-t border-gray-100">
+      <div class="text-xs font-semibold text-gray-800"><%= user?.name %></div>
+      <div class="text-xs text-purple-400 mb-2">Student</div>
+      <a href="/api/logout" class="flex items-center gap-2 text-xs text-red-500 hover:text-red-600"><span>→</span> Logout</a>
+    </div>
+  </div>
+
+  <div class="ml-56 min-h-screen">
+    <div class="bg-white border-b border-gray-200 px-8 py-4">
+      <h1 class="text-xl font-bold text-gray-800">My Marks</h1>
+      <p class="text-xs text-gray-400 mt-0.5">Your academic performance records</p>
+    </div>
+    <div class="p-8">
+      <% if (!student) { %>
+        <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-xl px-6 py-8 text-center">
+          <p class="text-sm">No student record linked. Contact your admin.</p>
+        </div>
+      <% } else if (marks.length === 0) { %>
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center text-gray-400">
+          <div class="text-4xl mb-3">📝</div>
+          <p class="text-sm">No marks records yet.</p>
+        </div>
+      <% } else { %>
+        <!-- Grade Summary -->
+        <div class="grid grid-cols-4 gap-4 mb-6">
+          <% const avg = marks.length ? (marks.reduce((s,m) => s + (m.marks_obtained/m.max_marks)*100, 0) / marks.length).toFixed(1) : 0; %>
+          <div class="bg-blue-50 rounded-xl border border-blue-100 p-4">
+            <div class="text-xs text-blue-500 mb-1">AVG SCORE</div>
+            <div class="text-2xl font-bold text-blue-700"><%= avg %>%</div>
+          </div>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+            <div class="text-xs text-gray-400 mb-1">TOTAL EXAMS</div>
+            <div class="text-2xl font-bold text-gray-800"><%= marks.length %></div>
+          </div>
+          <div class="bg-green-50 rounded-xl border border-green-100 p-4">
+            <div class="text-xs text-green-500 mb-1">A / A+ GRADES</div>
+            <div class="text-2xl font-bold text-green-700"><%= marks.filter(m => m.grade === 'A' || m.grade === 'A+').length %></div>
+          </div>
+          <div class="bg-red-50 rounded-xl border border-red-100 p-4">
+            <div class="text-xs text-red-500 mb-1">F GRADES</div>
+            <div class="text-2xl font-bold text-red-700"><%= marks.filter(m => m.grade === 'F').length %></div>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+          <table class="w-full">
+            <thead>
+              <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
+                <th class="px-6 py-4 text-left">Course</th>
+                <th class="px-6 py-4 text-left">Exam Type</th>
+                <th class="px-6 py-4 text-left">Score</th>
+                <th class="px-6 py-4 text-left">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% marks.forEach(m => { %>
+                <tr class="border-b border-gray-50">
+                  <td class="px-6 py-4 text-sm font-medium text-gray-800"><%= m.course?.course_name %></td>
+                  <td class="px-6 py-4 text-sm text-gray-500"><%= m.exam_type %></td>
+                  <td class="px-6 py-4 text-sm text-gray-800"><%= m.marks_obtained %>/<%= m.max_marks %>
+                    <span class="text-xs text-gray-400">(<%= ((m.marks_obtained/m.max_marks)*100).toFixed(0) %>%)</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 text-xs rounded-full font-bold
+                      <%= m.grade === 'A+' ? 'bg-green-100 text-green-700' :
+                          m.grade === 'A'  ? 'bg-green-50 text-green-600' :
+                          m.grade === 'B'  ? 'bg-blue-50 text-blue-600' :
+                          m.grade === 'C'  ? 'bg-yellow-50 text-yellow-600' :
+                          m.grade === 'D'  ? 'bg-orange-50 text-orange-500' : 'bg-red-50 text-red-500' %>">
+                      <%= m.grade %>
+                    </span>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

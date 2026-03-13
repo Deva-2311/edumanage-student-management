@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <%- include('../partials/sidebar', { currentPage, user }) %>
+
+  <div class="ml-56 min-h-screen">
+    <div class="bg-white border-b border-gray-200 px-8 py-4">
+      <div class="text-xs text-gray-400 mb-1">Attendance › Mark Attendance</div>
+      <h1 class="text-xl font-bold text-gray-800">Mark Attendance</h1>
+      <p class="text-gray-400 text-sm">Record student presence for today's session</p>
+    </div>
+
+    <div class="p-8">
+      <% if (error) { %>
+        <div class="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-6 text-sm"><%= error %></div>
+      <% } %>
+      <% if (success) { %>
+        <div class="bg-green-50 text-green-600 px-4 py-3 rounded-lg mb-6 text-sm">✅ <%= success %></div>
+      <% } %>
+
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 max-w-2xl">
+        <form method="POST" action="/api/attendance/mark">
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Select Student <span class="text-red-500">*</span></label>
+              <select name="student_id" required
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Choose student...</option>
+                <% students.forEach(student => { %>
+                  <option value="<%= student.id %>"><%= student.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Select Course <span class="text-red-500">*</span></label>
+              <select name="course_id" required
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Choose course...</option>
+                <% courses.forEach(course => { %>
+                  <option value="<%= course.id %>"><%= course.course_code %> — <%= course.course_name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date <span class="text-red-500">*</span></label>
+              <input type="date" name="date" value="<%= today %>" required
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Status <span class="text-red-500">*</span></label>
+              <div class="flex gap-3 mt-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="status" value="present" checked class="text-blue-600"/>
+                  <span class="text-sm text-green-600 font-medium">Present</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="status" value="absent" class="text-blue-600"/>
+                  <span class="text-sm text-red-500 font-medium">Absent</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="status" value="late" class="text-blue-600"/>
+                  <span class="text-sm text-yellow-600 font-medium">Late</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 mt-8">
+            <button type="submit"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition text-sm">
+              Mark Attendance
+            </button>
+            <a href="/api/attendance"
+              class="border border-gray-200 text-gray-600 font-medium px-6 py-2.5 rounded-lg text-sm hover:bg-gray-50">
+              Back to Attendance
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

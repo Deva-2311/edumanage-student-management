@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <%- include('../partials/sidebar', { currentPage, user }) %>
+
+  <div class="ml-56 min-h-screen">
+    <div class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-bold text-gray-800">Course Management</h1>
+      <a href="/api/courses/add"
+        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+        + Add Course
+      </a>
+    </div>
+
+    <div class="p-8">
+      <!-- Search -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <form method="GET" action="/api/courses" class="flex gap-3">
+          <input type="text" name="search" value="<%= search %>"
+            placeholder="Search courses or departments..."
+            class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          <button type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Search</button>
+          <% if (search) { %>
+            <a href="/api/courses" class="border border-gray-200 px-4 py-2 rounded-lg text-sm text-gray-600">Clear</a>
+          <% } %>
+        </form>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+        <table class="w-full">
+          <thead>
+            <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
+              <th class="px-6 py-4 text-left">Course Code</th>
+              <th class="px-6 py-4 text-left">Course Name</th>
+              <th class="px-6 py-4 text-left">Department</th>
+              <th class="px-6 py-4 text-left">Instructor</th>
+              <th class="px-6 py-4 text-left">Enrolled</th>
+              <th class="px-6 py-4 text-left">Status</th>
+              <th class="px-6 py-4 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (courses.length === 0) { %>
+              <tr>
+                <td colspan="7" class="px-6 py-12 text-center text-gray-400">
+                  No courses found.
+                  <a href="/api/courses/add" class="text-blue-600 hover:underline ml-1">Add one?</a>
+                </td>
+              </tr>
+            <% } else { %>
+              <% courses.forEach(course => { %>
+                <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
+                  <td class="px-6 py-4 text-sm text-blue-600 font-mono font-semibold"><%= course.course_code %></td>
+                  <td class="px-6 py-4 text-sm font-semibold text-gray-800"><%= course.course_name %></td>
+                  <td class="px-6 py-4 text-sm text-gray-500"><%= course.department %></td>
+                  <td class="px-6 py-4 text-sm text-gray-500"><%= course.instructor ?? '—' %></td>
+                  <td class="px-6 py-4 text-sm text-gray-600">
+                    <%= course.enrollments?.length ?? 0 %> students
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 text-xs rounded-full font-medium
+                      <%= course.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400' %>">
+                      <%= course.is_active ? 'Active' : 'Inactive' %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <a href="/api/courses/<%= course.id %>/edit"
+                        class="text-blue-600 hover:text-blue-700 text-xs font-medium">Edit</a>
+                      <form method="POST" action="/api/courses/<%= course.id %>/delete"
+                        onsubmit="return confirm('Delete this course?')">
+                        <button type="submit" class="text-red-400 hover:text-red-600 text-xs font-medium">Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+          <span class="text-sm text-gray-400">
+            Showing <%= (page-1)*limit+1 %> to <%= Math.min(page*limit, total) %> of <%= total %> courses
+          </span>
+          <div class="flex gap-2">
+            <% for(let i = 1; i <= totalPages; i++) { %>
+              <a href="/api/courses?page=<%= i %><%= search ? '&search='+search : '' %>"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-sm
+                  <%= i === page ? 'bg-blue-600 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50' %>">
+                <%= i %>
+              </a>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-4 gap-4 p-6 border-t border-gray-100">
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1">TOTAL COURSES</div>
+            <div class="text-2xl font-bold text-gray-800"><%= total %></div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1">ACTIVE COURSES</div>
+            <div class="text-2xl font-bold text-gray-800">
+              <%= courses.filter(c => c.is_active).length %>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1">TOTAL ENROLLED</div>
+            <div class="text-2xl font-bold text-gray-800">
+              <%= courses.reduce((sum, c) => sum + (c.enrollments?.length ?? 0), 0) %>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1">DEPARTMENTS</div>
+            <div class="text-2xl font-bold text-gray-800">
+              <%= [...new Set(courses.map(c => c.department))].length %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

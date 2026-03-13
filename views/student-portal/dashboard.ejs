@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %> — EduManage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Student Sidebar -->
+  <div class="fixed left-0 top-0 h-full w-56 bg-white border-r border-gray-200 flex flex-col z-10">
+    <div class="px-6 py-5 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white text-sm">🎓</div>
+        <div>
+          <div class="font-bold text-gray-800 text-sm">EduManage</div>
+          <div class="text-xs text-purple-500">Student Portal</div>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1">
+      <a href="/api/student-portal" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium <%= currentPage === 'portal-dashboard' ? 'bg-purple-50 text-purple-600' : 'text-gray-600 hover:bg-gray-50' %>">
+        <span>📊</span> My Dashboard
+      </a>
+      <a href="/api/student-portal/marks" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium <%= currentPage === 'portal-marks' ? 'bg-purple-50 text-purple-600' : 'text-gray-600 hover:bg-gray-50' %>">
+        <span>📝</span> My Marks
+      </a>
+      <a href="/api/student-portal/attendance" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium <%= currentPage === 'portal-attendance' ? 'bg-purple-50 text-purple-600' : 'text-gray-600 hover:bg-gray-50' %>">
+        <span>✅</span> My Attendance
+      </a>
+    </nav>
+    <div class="px-4 py-4 border-t border-gray-100">
+      <div class="text-xs font-semibold text-gray-800"><%= user?.name ?? 'Student' %></div>
+      <div class="text-xs text-purple-400 mb-2">Student</div>
+      <a href="/api/logout" class="flex items-center gap-2 text-xs text-red-500 hover:text-red-600">
+        <span>→</span> Logout
+      </a>
+    </div>
+  </div>
+
+  <div class="ml-56 min-h-screen">
+    <div class="bg-white border-b border-gray-200 px-8 py-4">
+      <h1 class="text-xl font-bold text-gray-800">My Dashboard</h1>
+      <p class="text-xs text-gray-400 mt-0.5">Welcome back, <%= student?.name ?? user?.name %>!</p>
+    </div>
+
+    <div class="p-8">
+      <% if (!student) { %>
+        <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-xl px-6 py-8 text-center">
+          <div class="text-3xl mb-3">⚠️</div>
+          <h2 class="font-semibold mb-1">No student record linked</h2>
+          <p class="text-sm">Your account is not yet linked to a student record. Please contact your admin.</p>
+        </div>
+      <% } else { %>
+
+        <!-- Profile Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-2xl font-bold">
+              <%= student.name.charAt(0).toUpperCase() %>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-gray-800"><%= student.name %></h2>
+              <p class="text-gray-400 text-sm">STU-<%= String(student.id).padStart(4,'0') %></p>
+              <p class="text-gray-500 text-sm"><%= student.department %></p>
+            </div>
+            <div class="ml-auto">
+              <span class="px-3 py-1 bg-green-50 text-green-600 text-xs rounded-full font-medium">ACTIVE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="text-xs text-gray-400 mb-2">ENROLLED COURSES</div>
+            <div class="text-3xl font-bold text-purple-600"><%= student.enrollments?.length ?? 0 %></div>
+          </div>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="text-xs text-gray-400 mb-2">MARKS RECORDS</div>
+            <div class="text-3xl font-bold text-blue-600"><%= student.marks?.length ?? 0 %></div>
+          </div>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="text-xs text-gray-400 mb-2">ATTENDANCE RECORDS</div>
+            <div class="text-3xl font-bold text-emerald-600"><%= student.attendance?.length ?? 0 %></div>
+          </div>
+        </div>
+
+        <!-- Personal Info -->
+        <div class="grid grid-cols-2 gap-6">
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">👤 Personal Information</h3>
+            <dl class="space-y-3">
+              <div class="flex justify-between text-sm"><dt class="text-gray-400">Full Name</dt><dd class="font-medium text-gray-800"><%= student.name %></dd></div>
+              <div class="flex justify-between text-sm"><dt class="text-gray-400">Email</dt><dd class="text-blue-600"><%= student.email %></dd></div>
+              <div class="flex justify-between text-sm"><dt class="text-gray-400">Age</dt><dd class="text-gray-800"><%= student.age %></dd></div>
+              <div class="flex justify-between text-sm"><dt class="text-gray-400">Phone</dt><dd class="text-gray-800"><%= student.phone ?? '—' %></dd></div>
+              <div class="flex justify-between text-sm"><dt class="text-gray-400">City</dt><dd class="text-gray-800"><%= student.city ?? '—' %></dd></div>
+              <div class="flex justify-between text-sm"><dt class="text-gray-400">Department</dt><dd class="text-gray-800"><%= student.department %></dd></div>
+            </dl>
+          </div>
+
+          <!-- Enrolled Courses -->
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">📚 Enrolled Courses</h3>
+            <% if (!student.enrollments || student.enrollments.length === 0) { %>
+              <p class="text-gray-400 text-sm">No courses enrolled yet.</p>
+            <% } else { %>
+              <div class="space-y-2">
+                <% student.enrollments.forEach(e => { %>
+                  <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                    <span class="text-sm text-gray-800"><%= e.course?.course_name %></span>
+                    <span class="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded-full capitalize"><%= e.status %></span>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="mt-6 grid grid-cols-2 gap-4">
+          <a href="/api/student-portal/marks" class="bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-xl p-4 flex items-center gap-3 transition">
+            <span class="text-2xl">📝</span>
+            <div><div class="font-semibold text-blue-700 text-sm">View My Marks</div><div class="text-xs text-blue-400">Academic performance records</div></div>
+          </a>
+          <a href="/api/student-portal/attendance" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-100 rounded-xl p-4 flex items-center gap-3 transition">
+            <span class="text-2xl">✅</span>
+            <div><div class="font-semibold text-emerald-700 text-sm">View My Attendance</div><div class="text-xs text-emerald-400">Session attendance history</div></div>
+          </a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

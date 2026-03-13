@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <%- include('../partials/sidebar', { currentPage, user }) %>
+
+  <div class="ml-56 min-h-screen">
+    <div class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-bold text-gray-800">Marks Management</h1>
+      <a href="/api/marks/add"
+        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+        + Add Marks
+      </a>
+    </div>
+
+    <div class="p-8">
+      <!-- Search -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <form method="GET" action="/api/marks" class="flex gap-3">
+          <input type="text" name="search" value="<%= search %>"
+            placeholder="Search by student or course..."
+            class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          <button type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Search</button>
+          <% if (search) { %>
+            <a href="/api/marks" class="border border-gray-200 px-4 py-2 rounded-lg text-sm text-gray-600">Clear</a>
+          <% } %>
+        </form>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+        <table class="w-full">
+          <thead>
+            <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
+              <th class="px-6 py-4 text-left">Student</th>
+              <th class="px-6 py-4 text-left">Course</th>
+              <th class="px-6 py-4 text-left">Exam Type</th>
+              <th class="px-6 py-4 text-left">Marks</th>
+              <th class="px-6 py-4 text-left">Grade</th>
+              <th class="px-6 py-4 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (marks.length === 0) { %>
+              <tr>
+                <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                  No marks found.
+                  <a href="/api/marks/add" class="text-blue-600 hover:underline ml-1">Add now?</a>
+                </td>
+              </tr>
+            <% } else { %>
+              <% marks.forEach(mark => { %>
+                <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs font-bold">
+                        <%= mark.student?.name?.charAt(0).toUpperCase() %>
+                      </div>
+                      <span class="text-sm font-medium text-gray-800"><%= mark.student?.name %></span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-600"><%= mark.course?.course_name %></td>
+                  <td class="px-6 py-4 text-sm text-gray-600"><%= mark.exam_type %></td>
+                  <td class="px-6 py-4 text-sm font-semibold text-gray-800">
+                    <%= mark.marks_obtained %>/<%= mark.max_marks %>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 text-xs rounded-full font-bold
+                      <%= mark.grade === 'A+' ? 'bg-green-100 text-green-700' :
+                          mark.grade === 'A'  ? 'bg-green-50 text-green-600' :
+                          mark.grade === 'B'  ? 'bg-blue-50 text-blue-600' :
+                          mark.grade === 'C'  ? 'bg-yellow-50 text-yellow-600' :
+                          mark.grade === 'D'  ? 'bg-orange-50 text-orange-500' :
+                          'bg-red-50 text-red-500' %>">
+                      <%= mark.grade %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <a href="/api/marks/<%= mark.id %>/edit"
+                        class="text-blue-600 hover:text-blue-700 text-xs font-medium">Edit</a>
+                      <form method="POST" action="/api/marks/<%= mark.id %>/delete"
+                        onsubmit="return confirm('Delete this mark?')">
+                        <button type="submit" class="text-red-400 hover:text-red-600 text-xs font-medium">Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+          <span class="text-sm text-gray-400">
+            Showing <%= Math.min((page-1)*limit+1, total) %> to <%= Math.min(page*limit, total) %> of <%= total %> records
+          </span>
+          <div class="flex gap-2">
+            <% for(let i = 1; i <= totalPages; i++) { %>
+              <a href="/api/marks?page=<%= i %>"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-sm
+                  <%= i === page ? 'bg-blue-600 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50' %>">
+                <%= i %>
+              </a>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Grade Stats -->
+        <div class="p-6 border-t border-gray-100">
+          <h3 class="text-sm font-semibold text-gray-600 mb-3">Grade Distribution</h3>
+          <div class="flex gap-3 flex-wrap">
+            <% Object.entries(gradeCount).forEach(([grade, count]) => { %>
+              <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-2">
+                <span class="font-bold text-sm
+                  <%= grade === 'A+' ? 'text-green-700' :
+                      grade === 'A'  ? 'text-green-600' :
+                      grade === 'B'  ? 'text-blue-600' :
+                      grade === 'C'  ? 'text-yellow-600' :
+                      grade === 'D'  ? 'text-orange-500' :
+                      'text-red-500' %>"><%= grade %></span>
+                <span class="text-gray-500 text-sm"><%= count %> students</span>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

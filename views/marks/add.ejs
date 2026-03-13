@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <%- include('../partials/sidebar', { currentPage, user }) %>
+
+  <div class="ml-56 min-h-screen">
+    <div class="bg-white border-b border-gray-200 px-8 py-4">
+      <div class="text-xs text-gray-400 mb-1">Marks › Add Marks</div>
+      <h1 class="text-xl font-bold text-gray-800">Add Student Marks</h1>
+      <p class="text-gray-400 text-sm">Record academic performance for the current semester</p>
+    </div>
+
+    <div class="p-8">
+      <% if (error) { %>
+        <div class="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-6 text-sm"><%= error %></div>
+      <% } %>
+
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 max-w-2xl">
+        <form method="POST" action="/api/marks/add">
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Select Student <span class="text-red-500">*</span></label>
+              <select name="student_id" required
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Search and select student...</option>
+                <% students.forEach(student => { %>
+                  <option value="<%= student.id %>"><%= student.name %> — <%= student.department %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Select Course <span class="text-red-500">*</span></label>
+              <select name="course_id" required
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Choose a course...</option>
+                <% courses.forEach(course => { %>
+                  <option value="<%= course.id %>"><%= course.course_code %> — <%= course.course_name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Exam Type <span class="text-red-500">*</span></label>
+              <select name="exam_type" required
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Select exam type...</option>
+                <option value="Midterm">Midterm</option>
+                <option value="Final Exam">Final Exam</option>
+                <option value="Assignment">Assignment</option>
+                <option value="Quiz">Quiz</option>
+                <option value="Lab">Lab</option>
+                <option value="Project">Project</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Maximum Marks <span class="text-red-500">*</span></label>
+              <input type="number" name="max_marks" value="100" required min="1"
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+            </div>
+            <div class="col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Marks Obtained <span class="text-red-500">*</span></label>
+              <input type="number" name="marks_obtained" id="marks_obtained"
+                placeholder="Enter marks" required min="0" step="0.01"
+                oninput="calculateGrade()"
+                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+            </div>
+          </div>
+
+          <!-- Live Grade Preview -->
+          <div class="mt-4 bg-blue-50 rounded-lg p-4 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-blue-600 font-semibold uppercase mb-1">Calculated Grade</div>
+              <div class="text-2xl font-bold text-blue-700" id="gradeDisplay">--</div>
+              <div class="text-xs text-blue-400 mt-1">Grade updates automatically based on marks entered</div>
+            </div>
+            <button type="button" onclick="calculateGrade()"
+              class="border border-blue-300 text-blue-600 text-sm px-4 py-2 rounded-lg hover:bg-blue-100">
+              Calculate Grade
+            </button>
+          </div>
+
+          <div class="flex items-center gap-4 mt-6">
+            <button type="submit"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition text-sm">
+              Save Marks
+            </button>
+            <a href="/api/marks"
+              class="border border-gray-200 text-gray-600 font-medium px-6 py-2.5 rounded-lg text-sm hover:bg-gray-50">
+              Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calculateGrade() {
+      const marks = parseFloat(document.querySelector('[name="marks_obtained"]').value);
+      const max = parseFloat(document.querySelector('[name="max_marks"]').value) || 100;
+      const display = document.getElementById('gradeDisplay');
+      if (isNaN(marks)) { display.textContent = '--'; return; }
+      const pct = (marks / max) * 100;
+      if (pct >= 90)      { display.textContent = 'A+'; display.className = 'text-2xl font-bold text-green-700'; }
+      else if (pct >= 80) { display.textContent = 'A';  display.className = 'text-2xl font-bold text-green-600'; }
+      else if (pct >= 70) { display.textContent = 'B';  display.className = 'text-2xl font-bold text-blue-600'; }
+      else if (pct >= 60) { display.textContent = 'C';  display.className = 'text-2xl font-bold text-yellow-600'; }
+      else if (pct >= 50) { display.textContent = 'D';  display.className = 'text-2xl font-bold text-orange-500'; }
+      else                { display.textContent = 'F';  display.className = 'text-2xl font-bold text-red-500'; }
+    }
+  </script>
+</body>
+</html>

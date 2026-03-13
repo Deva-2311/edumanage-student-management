@@ -1,0 +1,136 @@
+# ===============================
+
+# Node.js dependencies
+
+# ===============================
+
+node_modules/
+
+# ===============================
+
+# Build output
+
+# ===============================
+
+dist/
+build/
+coverage/
+
+# ===============================
+
+# Logs
+
+# ===============================
+
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===============================
+
+# Runtime data
+
+# ===============================
+
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# ===============================
+
+# Environment variables
+
+# ===============================
+
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# ===============================
+
+# Database files
+
+# ===============================
+
+*.sqlite
+*.db
+
+# ===============================
+
+# OS generated files
+
+# ===============================
+
+.DS_Store
+Thumbs.db
+
+# ===============================
+
+# IDE / Editor files
+
+# ===============================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===============================
+
+# TypeScript cache
+
+# ===============================
+
+*.tsbuildinfo
+
+# ===============================
+
+# Temporary files
+
+# ===============================
+
+tmp/
+temp/
+
+# ===============================
+
+# GitHub / CI
+
+# ===============================
+
+.github/*.log
+
+# ===============================
+
+# Package manager
+
+# ===============================
+
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ===============================
+
+# Misc
+
+# ===============================
+
+*.tgz
+*.zip
+node_modules/
+dist/
+.env
+.env.local
+logs/
+*.log
+coverage/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
