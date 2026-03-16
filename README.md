@@ -543,7 +543,7 @@ Grades are calculated **automatically** from marks percentage. A live preview up
 | View dashboard | ✅ | ✅ | — |
 | Manage students (CRUD) | ✅ | ✅ | — |
 | Manage courses | ✅ | ✅ | — |
-| Enroll students | ✅ | ✅ | — |
+| Enroll students | ✅ | — | — |
 | Mark attendance | ✅ | ✅ | — |
 | Add/edit marks | ✅ | ✅ | — |
 | Delete records | ✅ | — | — |
