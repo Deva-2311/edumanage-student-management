@@ -1,425 +1,206 @@
 <div align="center">
+  <img src="https://img.shields.io/badge/EduManage-Platform-4f46e5?style=for-the-badge&logo=nestjs&logoColor=white" alt="EduManage Logo" />
+  <h1>🎓 EduManage</h1>
+  <p><strong>Enterprise-Grade Student Management System</strong></p>
 
-# 🎓 EduManage
+  <p>
+    <a href="#features">Features</a> •
+    <a href="#tech-stack">Tech Stack</a> •
+    <a href="#architecture">Architecture</a> •
+    <a href="#getting-started">Getting Started</a> •
+    <a href="#api-reference">API</a> •
+    <a href="#testing">Testing</a>
+  </p>
 
-### Student Management System
-
-<p align="center">
-  <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" />
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
-  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
-  <img src="https://img.shields.io/badge/TypeORM-FE0803?style=for-the-badge&logo=typeorm&logoColor=white" />
-  <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" />
-  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Node.js-≥18-339933?style=flat-square&logo=nodedotjs" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" />
-  <img src="https://img.shields.io/badge/Status-Production Ready-brightgreen?style=flat-square" />
-  <img src="https://img.shields.io/badge/Roles-Admin%20%7C%20Teacher%20%7C%20Student-blue?style=flat-square" />
-  <img src="https://img.shields.io/badge/API%20Endpoints-37-orange?style=flat-square" />
-</p>
-
-<p align="center">
-  A full-stack academic management platform built with <strong>NestJS</strong> and <strong>PostgreSQL</strong>.<br/>
-  Manage students, courses, attendance, marks, and analytics — all in one place.
-</p>
-
-<p align="center">
-  <a href="#-features">Features</a> •
-  <a href="#-tech-stack">Tech Stack</a> •
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-api-endpoints">API</a> •
-  <a href="#-architecture">Architecture</a> •
-  <a href="#-contributing">Contributing</a>
-</p>
-
----
-
-![EduManage Dashboard](docs/screenshots/dashboard-preview.png)
-
+  <p>
+    <img src="https://img.shields.io/badge/Node.js-%3E%3D18.0.0-339933?style=flat-square&logo=node.js" alt="Node version" />
+    <img src="https://img.shields.io/badge/NestJS-10.x-E0234E?style=flat-square&logo=nestjs" alt="NestJS version" />
+    <img src="https://img.shields.io/badge/PostgreSQL-15.x-4169E1?style=flat-square&logo=postgresql" alt="PostgreSQL version" />
+    <img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=flat-square&logo=docker" alt="Docker Support" />
+    <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License" />
+  </p>
 </div>
 
 ---
 
-## 📋 Table of Contents
+## 📖 Overview
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Architecture](#-architecture)
-- [Module Structure](#-module-structure)
-- [Database Schema](#-database-schema)
-- [Quick Start](#-quick-start)
-- [Environment Variables](#-environment-variables)
-- [API Endpoints](#-api-endpoints)
-- [Postman Collection](#-postman-collection)
-- [Grade Calculation](#-grade-calculation)
-- [Roles & Permissions](#-roles--permissions)
-- [Future Improvements](#-future-improvements)
-- [Author](#-author)
-- [License](#-license)
+**EduManage** is a production-ready, full-stack academic administration platform engineered to streamline the educational lifecycle. Built on the robust **NestJS** framework and powered by **PostgreSQL**, EduManage provides a secure, role-based ecosystem for Administrators, Teachers, and Students. 
+
+Originally developed as a capstone engineering project, it features complex workflows such as automated PDF transcript generation, real-time analytics, n8n webhook automations, and a robust REST API capable of serving both server-side rendered views and headless mobile clients.
 
 ---
 
-## 🌟 Overview
+## ✨ Key Features
 
-**EduManage** is a production-ready Student Management System developed as a capstone project during the **Smackcoders Internship (2026)**. It provides a complete academic administration platform with three distinct user portals: **Admin**, **Teacher**, and **Student**.
+### 🛡️ Enterprise Security & Identity
+- **Role-Based Access Control (RBAC):** Distinct routing, guards, and portals for `Admin`, `Teacher`, and `Student` roles.
+- **Stateless Authentication:** Secure, HTTP-only JWT cookie-based session management.
+- **Audit Trails:** Comprehensive logging of all critical mutations across the platform.
 
-The system handles the full academic lifecycle — from student registration and course management through enrollment, daily attendance tracking, examination marks entry with automatic grade calculation, and a real-time activity audit log. All actions are secured with JWT authentication and role-based access control.
+### 📚 Core Academic Operations
+- **Student Lifecycle Management:** Full CRUD operations with bulk CSV import and profile photo uploads.
+- **Course & Enrollment Tracking:** Dynamic course assignment with duplicate prevention and capacity tracking.
+- **Attendance & Grading:** Daily attendance logging, multi-format exam recording, and real-time GPA/Grade calculation.
 
----
-
-## ✨ Features
-
-### 🔐 Authentication & Authorization
-- JWT-based login with secure HTTP-only cookie sessions
-- Three distinct role portals: **Admin**, **Teacher**, **Student**
-- bcrypt password hashing (10 salt rounds)
-- Role-based route guards on every protected endpoint
-- Password reset and change functionality
-
-### 👨‍🎓 Student Management
-- Full CRUD with search, pagination, and department filtering
-- Detailed student profiles showing enrollments, attendance, and marks
-- Webhook integration (n8n / Zapier) triggered on student creation
-- Student self-service portal (view own marks, attendance, change password)
-
-### 📚 Course Management
-- Create and manage courses with department, instructor, and course code
-- Active/Inactive status toggle
-- Real-time enrolled student count per course
-
-### 📋 Enrollment System
-- Assign students to courses via modal UI
-- Status lifecycle: **Active → Completed → Dropped**
-- Duplicate enrollment prevention
-- Enrollment statistics dashboard
-
-### 📅 Attendance Tracking
-- Mark attendance: **Present**, **Absent**, **Late**
-- Filter by student, course, or date
-- Inline status correction
-- Attendance rate percentage stats
-
-### 📊 Marks Management
-- Record marks by exam type: Midterm, Final, Assignment, Quiz, Lab, Project
-- **Automatic grade calculation** (A+ through F) — live preview while entering marks
-- Grade distribution visualization
-- Edit and delete with automatic grade recalculation
-
-### 📈 Dashboard Analytics
-- Real-time stats: total students, courses, enrollments, attendance rate
-- Enrollment trend line chart (Chart.js)
-- Attendance bar chart
-- Recent activity log table
-
-### 🗒️ Activity Logs
-- Global audit trail — every CRUD action is automatically logged
-- Filter by module, status, user, or date range
-- Paginated log viewer (admin-only)
-
-### ⚙️ Settings
-- System information dashboard
-- User profile update
-- Secure password change with current password verification
+### 🚀 Advanced Integrations (v2)
+- **Document Generation:** On-the-fly PDF generation of official student transcripts using headless Puppeteer.
+- **Event-Driven Automations:** Outbound n8n/Zapier webhooks and automated Nodemailer email alerts for key events (e.g., enrollment, low attendance).
+- **Advanced Analytics:** Departmental performance heatmaps and predictive attendance algorithms.
+- **Headless API Mode:** Global request interception supporting `Accept: application/json` for seamless mobile app integration.
 
 ---
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Runtime** | Node.js ≥ 18 | JavaScript runtime |
-| **Framework** | NestJS + TypeScript | Backend framework with DI |
-| **Database** | PostgreSQL | Relational data store |
-| **ORM** | TypeORM | Entity management + migrations |
-| **Auth** | JWT + Passport.js | Token-based authentication |
-| **Hashing** | bcrypt | Secure password hashing |
-| **Frontend** | EJS Templating | Server-side rendered views |
-| **Styling** | TailwindCSS CDN | Utility-first CSS |
-| **Charts** | Chart.js CDN | Dashboard visualizations |
-| **Validation** | class-validator + DTOs | Request validation |
-| **HTTP Client** | @nestjs/axios | Webhook outbound requests |
-| **Session** | cookie-parser | JWT cookie handling |
+| Category | Technologies |
+|---|---|
+| **Core Framework** | Node.js, NestJS, TypeScript |
+| **Database & ORM** | PostgreSQL, TypeORM |
+| **Authentication** | Passport.js, JWT, bcrypt |
+| **Frontend Rendering**| EJS, TailwindCSS, Chart.js |
+| **Document & Files** | Puppeteer (PDFs), Multer (Uploads), csv-parser |
+| **Infrastructure** | Docker, Docker Compose |
+| **Quality Assurance**| Playwright (E2E), Jest (Unit/Integration) |
 
 ---
 
-## 🏗 Architecture
+## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        CLIENT BROWSER                       │
-│              (EJS Templates + TailwindCSS + Chart.js)       │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ HTTP Requests (Cookie: JWT)
-┌──────────────────────────▼──────────────────────────────────┐
-│                      NestJS APPLICATION                     │
-│                                                             │
-│  ┌─────────────┐  ┌──────────────┐  ┌────────────────────┐ │
-│  │  JWT Guard  │  │ Roles Guard  │  │  Validation Pipe   │ │
-│  └──────┬──────┘  └──────┬───────┘  └─────────┬──────────┘ │
-│         └────────────────┼───────────────────┘             │
-│                          │                                  │
-│  ┌───────────────────────▼─────────────────────────────┐   │
-│  │                    CONTROLLERS                      │   │
-│  │  Auth │ Students │ Courses │ Enrollment │ Attendance │   │
-│  │  Marks │ Logs │ Dashboard │ Settings │ StudentPortal│   │
-│  └───────────────────────┬─────────────────────────────┘   │
-│                          │                                  │
-│  ┌───────────────────────▼─────────────────────────────┐   │
-│  │                     SERVICES                        │   │
-│  │   Business Logic │ Grade Calc │ Webhook Trigger     │   │
-│  └───────────────────────┬─────────────────────────────┘   │
-│                          │                                  │
-│  ┌───────────────────────▼─────────────────────────────┐   │
-│  │               TypeORM REPOSITORIES                  │   │
-│  └───────────────────────┬─────────────────────────────┘   │
-└──────────────────────────┼──────────────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────────────┐
-│                     PostgreSQL DATABASE                     │
-│   users │ students │ courses │ enrollments │ attendance     │
-│                  marks │ logs                               │
-└─────────────────────────────────────────────────────────────┘
-```
+EduManage employs a modular, domain-driven architecture heavily utilizing Dependency Injection.
 
-### Request Flow
+```mermaid
+graph TD;
+    Client[Client Browser / Mobile App] -->|HTTP / JSON| Gateway[NestJS API Gateway]
+    
+    subgraph Core Modules
+      Gateway --> AuthM[Auth Module]
+      Gateway --> StudentM[Student Module]
+      Gateway --> CourseM[Course Module]
+      Gateway --> ReportM[Reports & Analytics]
+    end
 
-```
-Browser Request
-    │
-    ▼
-cookie-parser  ──► extracts JWT from cookie
-    │
-    ▼
-JwtAuthGuard   ──► validates token, attaches user to req
-    │
-    ▼
-RolesGuard     ──► checks user.role against @Roles() decorator
-    │
-    ▼
-ValidationPipe ──► validates body against DTO class
-    │
-    ▼
-Controller     ──► calls service method
-    │
-    ▼
-Service        ──► business logic, calls repository
-    │           └──► LogsService.log() (fire-and-forget)
-    ▼
-TypeORM Repo   ──► SQL query to PostgreSQL
-    │
-    ▼
-EJS Template   ──► server-side render → HTML response
+    subgraph Infrastructure
+      StudentM --> NotifyS[Notifications Service]
+      NotifyS -->|SMTP| Email[(Email Provider)]
+      NotifyS -->|Webhook| n8n[(n8n Automation)]
+      ReportM --> Pup[Puppeteer PDF Engine]
+    end
+
+    subgraph Data Access Layer
+      AuthM --> DB[(PostgreSQL)]
+      StudentM --> DB
+      CourseM --> DB
+      ReportM --> DB
+    end
 ```
 
 ---
 
-## 📁 Module Structure
-
-```
-student-management-system/
-│
-├── src/
-│   ├── app.module.ts              # Root module — wires everything
-│   ├── main.ts                    # Bootstrap — EJS, cookies, prefix, port
-│   │
-│   ├── auth/                      # JWT auth, login, registration
-│   │   ├── auth.controller.ts     # Login/logout/register routes
-│   │   ├── auth.service.ts        # Token generation, password hashing
-│   │   ├── auth.module.ts
-│   │   ├── user.entity.ts         # User model (admin/teacher/student roles)
-│   │   ├── jwt.strategy.ts        # Passport JWT strategy
-│   │   └── guards/
-│   │       ├── jwt-auth.guard.ts  # Protects all private routes
-│   │       ├── roles.guard.ts     # Role-based access control
-│   │       └── roles.decorator.ts # @Roles() decorator
-│   │
-│   ├── dashboard/                 # Analytics & stats
-│   ├── students/                  # Student CRUD + Student Portal
-│   │   ├── student.controller.ts  # Admin/Teacher student management
-│   │   ├── student-portal.controller.ts  # Student self-service
-│   │   ├── student.service.ts
-│   │   └── student.entity.ts
-│   │
-│   ├── courses/                   # Course management
-│   ├── enrollment/                # Student-course enrollment
-│   ├── attendance/                # Attendance tracking
-│   ├── marks/                     # Marks + auto grade calculation
-│   ├── logs/                      # Global audit logging (exported service)
-│   └── settings/                  # Profile + system settings
-│
-├── views/                         # EJS templates (server-side rendered)
-│   ├── partials/sidebar.ejs       # Shared navigation sidebar
-│   ├── auth/                      # portal, login-admin, login-teacher
-│   ├── dashboard/index.ejs
-│   ├── students/                  # index, add, edit, profile
-│   ├── courses/                   # index, add, edit
-│   ├── enrollment/index.ejs
-│   ├── attendance/                # index, mark
-│   ├── marks/                     # index, add, edit
-│   ├── logs/index.ejs
-│   ├── settings/                  # system, profile
-│   ├── student-portal/            # dashboard, marks, attendance, password
-│   └── admin/users.ejs
-│
-├── public/                        # Static assets (css, js, images)
-├── postman/                       # EduManage.postman_collection.json
-├── docs/                          # Architecture, API reference, DB schema
-├── database/scripts/              # Seed scripts
-├── .env.example                   # Environment variable template
-├── package.json
-├── tsconfig.json
-└── README.md
-```
-
----
-
-## 🗄 Database Schema
-
-```
-┌──────────────┐       ┌──────────────┐       ┌──────────────────┐
-│    users     │       │   students   │       │    courses       │
-├──────────────┤       ├──────────────┤       ├──────────────────┤
-│ id (PK)      │       │ id (PK)      │       │ id (PK)          │
-│ name         │       │ name         │       │ course_code      │
-│ email        │       │ email        │       │ course_name      │
-│ password     │       │ age          │       │ department       │
-│ role         │       │ department   │       │ description      │
-│ studentId    │       │ phone        │       │ instructor       │
-│ created_at   │       │ city         │       │ is_active        │
-└──────┬───────┘       │ created_at   │       │ created_at       │
-       │               └──────┬───────┘       └────────┬─────────┘
-       │                      │                         │
-       │         ┌────────────┼─────────────────────────┤
-       │         │            │                         │
-       │    ┌────▼────────────▼──┐    ┌─────────────────▼──────┐
-       │    │    enrollments     │    │      attendance         │
-       │    ├────────────────────┤    ├────────────────────────┤
-       │    │ id (PK)            │    │ id (PK)                │
-       │    │ student_id (FK)    │    │ student_id (FK)        │
-       │    │ course_id (FK)     │    │ course_id (FK)         │
-       │    │ status             │    │ teacher_id (FK)        │
-       │    │ enrolled_at        │    │ date                   │
-       │    └────────────────────┘    │ status                 │
-       │                             │ created_at             │
-       │                             └────────────────────────┘
-       │
-       │    ┌────────────────────┐    ┌────────────────────────┐
-       │    │       marks        │    │         logs           │
-       │    ├────────────────────┤    ├────────────────────────┤
-       │    │ id (PK)            │    │ id (PK)                │
-       │    │ student_id (FK)    │    │ user_id (FK) ──────────┘
-       │    │ course_id (FK)     │    │ action                 │
-       │    │ teacher_id (FK)    │    │ module                 │
-       │    │ exam_type          │    │ status                 │
-       │    │ marks_obtained     │    │ timestamp              │
-       │    │ max_marks          │    └────────────────────────┘
-       │    │ grade              │
-       │    └────────────────────┘
-```
-
----
-
-## 🚀 Quick Start
+## 🚦 Getting Started
 
 ### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) & Docker Compose (Recommended)
+- Node.js ≥ 18.0.0 (For local development)
+- PostgreSQL ≥ 15 (For local development)
 
-- **Node.js** ≥ 18.x
-- **npm** ≥ 9.x
-- **PostgreSQL** ≥ 13.x
+### Option A: Docker Deployment (Fastest)
 
-### 1. Clone the repository
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/YOUR_ORG/edumanage.git
+   cd edumanage
+   ```
 
+2. **Configure Environment:**
+   ```bash
+   cp .env.example .env
+   # Ensure DB_HOST=db inside .env for Docker networking
+   ```
+
+3. **Spin up the stack:**
+   ```bash
+   docker-compose up -d --build
+   ```
+   *The application will automatically build the NestJS server, provision the PostgreSQL container, and expose the UI on `http://localhost:3000`.*
+
+### Option B: Local Development
+
+1. **Install Dependencies:**
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+
+2. **Configure Database:**
+   Update your `.env` with local PostgreSQL credentials.
+   ```sql
+   CREATE DATABASE edumanage;
+   ```
+
+3. **Seed Initial Admin:**
+   ```bash
+   npm run seed
+   ```
+   *(Creates default admin: `admin@edumanage.edu` / `admin123`)*
+
+4. **Start the Application:**
+   ```bash
+   npm run start:dev
+   ```
+
+---
+
+## 🌐 API Reference
+
+EduManage provides a comprehensive REST API. You can import the full Postman collection to test the endpoints interactively.
+
+**Postman Collection:** `postman/EduManage.postman_collection.json`
+
+### Content Negotiation
+The API dynamically responds based on the `Accept` header:
+- `Accept: text/html` ➔ Returns Server-Side Rendered EJS Views (Default browser behavior).
+- `Accept: application/json` ➔ Returns raw JSON payloads for headless client consumption.
+
+---
+
+## 🧪 Testing
+
+The platform includes an automated End-to-End (E2E) testing suite powered by Playwright to ensure critical user flows (like Authentication) remain stable.
+
+**Run E2E Tests:**
 ```bash
-git clone https://github.com/YOUR_USERNAME/edumanage-student-management.git
-cd edumanage-student-management
-```
+# Ensure the development server is running, or let Playwright start it
+npx playwright test
 
-### 2. Install dependencies
-
-```bash
-npm install
-```
-
-### 3. Configure environment
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` with your database credentials (see [Environment Variables](#-environment-variables)).
-
-### 4. Create the database
-
-```sql
--- Run in psql or pgAdmin
-CREATE DATABASE edumanage;
-```
-
-> Tables are **auto-created** by TypeORM on first run (`synchronize: true`).
-
-### 5. Seed the admin user
-
-```bash
-npm run seed
-```
-
-This creates the default admin account:
-| Field | Value |
-|-------|-------|
-| Email | `admin@edumanage.edu` |
-| Password | `admin123` |
-| Role | `admin` |
-
-### 6. Start the server
-
-```bash
-# Development (with hot reload)
-npm run start:dev
-
-# Production
-npm run build
-npm run start:prod
-```
-
-### 7. Open in browser
-
-```
-http://localhost:3000
+# View the HTML test report
+npx playwright show-report
 ```
 
 ---
 
-## 🔧 Environment Variables
+## 📁 Project Structure
 
-Copy `.env.example` to `.env` and fill in your values:
-
-```env
-# ── Database ──────────────────────────────
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASS=your_password
-DB_NAME=edumanage
-
-# ── JWT ───────────────────────────────────
-JWT_SECRET=your_super_secret_key_minimum_32_chars
-JWT_EXPIRES=1d
-
-# ── Server ────────────────────────────────
-PORT=3000
-
-# ── Webhooks (optional) ───────────────────
-# Triggered on new student creation
-WEBHOOK_URL=https://your-n8n-or-zapier-webhook-url
+```text
+├── .github/                # CI/CD Workflows (Optional)
+├── database/scripts/       # TypeORM Seeding Scripts
+├── e2e/                    # Playwright End-to-End Tests
+├── src/                    
+│   ├── analytics/          # Heatmaps & Predictions Domain
+│   ├── auth/               # RBAC & Passport Strategies
+│   ├── common/             # Global Middlewares (API Mode)
+│   ├── notifications/      # SMTP & Webhook Services
+│   ├── reports/            # Puppeteer PDF Generation
+│   └── students/           # Student CRUD & Portals
+├── views/                  # EJS Template Engine
+├── Dockerfile              # Multi-stage production build
+├── docker-compose.yml      # Container orchestration
+└── playwright.config.ts    # Test configuration
 ```
 
 ---
 
-## 🌐 API Endpoints
+## 🤝 Contributing
+
 
 > All routes are prefixed with `/api`. JWT cookie required for all protected routes.
 
@@ -578,15 +359,19 @@ Grades are calculated **automatically** from marks percentage. A live preview up
 Smackcoders Internship Capstone — 2026
 
 > Built from scratch during a backend engineering internship — covering full-stack NestJS architecture, relational database design, JWT authentication, role-based access control, and server-side rendering.
+We welcome contributions to EduManage! Please adhere to the following workflow:
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/amazing-feature`).
+3. Commit your changes adhering to [Conventional Commits](https://www.conventionalcommits.org/).
+4. Ensure all tests pass (`npm run test` & `npx playwright test`).
+5. Open a Pull Request.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
+Distributed under the **MIT License**. See `LICENSE` for more information.
 
 <div align="center">
-  <sub>Built with ❤️ using NestJS + PostgreSQL</sub>
+  <p>Engineered by <strong>Dev Prasath Bharanidharan</strong> | Smackcoders Capstone 2026</p>
 </div>

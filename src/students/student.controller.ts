@@ -1,7 +1,11 @@
 import {
   Controller, Get, Post, Body, Param, Res,
-  Req, Query, UseGuards, Render
+  Req, Query, UseGuards, Render, UseInterceptors, UploadedFile
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+const csv = require('csv-parser');
+import * as fs from 'fs';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -151,5 +155,55 @@ export class StudentController {
     await this.studentService.remove(Number(id));
     await this.logsService.log(user, `Deleted student ID ${id}`, 'Students');
     return res.redirect('/api/students');
+  }
+    // Upload student photo
+  @Post(':id/photo')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @UseInterceptors(FileInterceptor('photo', {
+    storage: diskStorage({
+      destination: './uploads/photos',
+      filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+    })
+  }))
+  async uploadPhoto(@Param('id') id: string, @UploadedFile() file: any, @Req() req: Request, @Res() res: Response) {
+    // In a real app, save file.path to student.photoUrl in DB
+    const user = (req as any).user;
+    await this.logsService.log(user, `Uploaded photo for student ID ${id}`, 'Students');
+    return res.redirect(`/api/students/${id}`);
+  }
+
+  // Bulk import via CSV
+  @Post('bulk-import')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @UseInterceptors(FileInterceptor('file', { dest: './uploads/csv' }))
+  async bulkImport(@UploadedFile() file: any, @Req() req: Request, @Res() res: Response) {
+    const user = (req as any).user;
+    const results = [];
+    fs.createReadStream(file.path)
+      .pipe(csv())
+      .on('data', (data) => results.push(data))
+      .on('end', async () => {
+        let count = 0;
+        for (const row of results) {
+          try {
+            await this.studentService.create({
+              name: row.name,
+              email: row.email,
+              age: parseInt(row.age),
+              department: row.department,
+              phone: row.phone,
+              city: row.city,
+            });
+            count++;
+          } catch (e) {
+            // skip failed rows
+          }
+        }
+        await this.logsService.log(user, `Bulk imported ${count} students`, 'Students');
+        fs.unlinkSync(file.path); // clean up
+        return res.redirect('/api/students');
+      });
   }
 }

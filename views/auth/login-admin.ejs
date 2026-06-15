@@ -1,50 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <title><%= title %></title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin Login — EduManage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/edumanage.css"/>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Inter', sans-serif; }
+    body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;margin-left:0}
+    #main{margin-left:0}
+    .login-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:32px;width:100%;max-width:400px;box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+    .pw-wrap{position:relative}
+    .pw-wrap input{padding-right:38px}
+    .pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:0.85rem;padding:0}
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex items-center justify-center px-4">
-  <div class="w-full max-w-md">
-    <div class="text-center mb-8">
-      <a href="/api/login" class="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm mb-6 transition">← Back to portals</a>
-      <div class="w-14 h-14 bg-blue-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg">🛡️</div>
-      <h1 class="text-2xl font-bold text-white">Admin Portal</h1>
-      <p class="text-slate-400 text-xs mt-1">Accounts are managed by the system administrator</p>
-    </div>
-
-    <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8">
-      <% if (error) { %>
-        <div class="bg-red-500/20 border border-red-400/30 text-red-300 rounded-xl px-4 py-3 text-sm mb-5"><%= error %></div>
-      <% } %>
-      <form method="POST" action="/api/login">
-        <input type="hidden" name="role" value="admin"/>
-        <div class="space-y-4">
-          <div>
-            <label class="text-xs font-medium text-slate-300 block mb-1.5">Email Address</label>
-            <input type="email" name="email" required placeholder="admin@edumanage.com" autocomplete="email"
-              class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-400"/>
-          </div>
-          <div>
-            <label class="text-xs font-medium text-slate-300 block mb-1.5">Password</label>
-            <input type="password" name="password" required placeholder="••••••••" autocomplete="current-password"
-              class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-400"/>
-          </div>
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl transition text-sm mt-2">
-            Sign In as Admin
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <div class="mt-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-center">
-      <p class="text-slate-400 text-xs">🔑 New admin accounts are created by an existing administrator via User Management.</p>
+<body>
+<div class="login-card">
+  <a href="/api/login" style="font-size:0.78rem;color:#64748b;text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-bottom:20px">← Back to portals</a>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px">
+    <div style="width:38px;height:38px;background:#ede9fe;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem">🛡️</div>
+    <div>
+      <div style="font-size:0.95rem;font-weight:800;color:#191c1e">EduManage</div>
+      <span style="font-size:0.7rem;font-weight:600;background:#ede9fe;color:#4f46e5;padding:2px 8px;border-radius:99px">Admin Portal</span>
     </div>
   </div>
+  <h2 style="font-size:1.1rem;font-weight:700;color:#191c1e;margin-bottom:4px">Sign in to your account</h2>
+  <p style="font-size:0.78rem;color:#64748b;margin-bottom:20px">Enter your credentials to continue</p>
+  <% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-error">✗ <%= error %></div>
+  <% } %>
+  <form method="POST" action="/api/login">
+    <input type="hidden" name="portal" value="admin"/>
+    <div class="form-group">
+      <label class="form-label" for="email">Email Address</label>
+      <input type="email" id="email" name="email" class="form-input" placeholder="admin@institution.edu" required autocomplete="email"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="password">Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="password" name="password" class="form-input" placeholder="Enter password" required autocomplete="current-password"/>
+        <button type="button" class="pw-toggle" onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'">👁</button>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px;font-size:0.85rem;margin-top:4px">Sign In →</button>
+  </form>
+  <p style="text-align:center;font-size:0.7rem;color:#94a3b8;margin-top:20px">© 2026 EduManage · Smackcoders</p>
+</div>
 </body>
 </html>

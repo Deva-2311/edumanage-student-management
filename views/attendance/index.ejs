@@ -1,135 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <title><%= title %></title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title><%= title %> — EduManage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/edumanage.css"/>
+  <style>
+    .att-grid { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
+    .class-item { padding: 12px 16px; border-radius: 6px; cursor: pointer; transition: background 0.2s; margin-bottom: 4px; }
+    .class-item.active { background: var(--primary-light); }
+    .class-item-title { font-weight: 600; color: var(--text); font-size: 0.85rem; }
+    .class-item.active .class-item-title { color: var(--primary); }
+    .class-item-meta { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
+    
+    .att-box { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; border-radius: 4px; }
+    .att-p { background: rgba(5,150,105,0.1); color: #059669; border: 1px solid rgba(5,150,105,0.2); }
+    .att-a { background: rgba(220,38,38,0.1); color: #dc2626; border: 1px solid rgba(220,38,38,0.2); }
+    .att-l { background: rgba(217,119,6,0.1); color: #d97706; border: 1px solid rgba(217,119,6,0.2); }
+    
+    .tabs-small { display: flex; background: var(--surface-low); border-radius: 6px; padding: 4px; width: fit-content; }
+    .tab-small { padding: 6px 16px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 4px; }
+    .tab-small.active { background: white; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
-<body class="bg-gray-50">
-  <%- include('../partials/sidebar', { currentPage, user }) %>
+<body>
+<%- include('../partials/sidebar', { currentPage: 'attendance', user }) %>
+<div id="main">
+  <!-- Topbar override -->
+  <div class="topbar">
+    <div class="topbar-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim)"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" placeholder="Search students, classes, or records..." />
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></div>
+      <div class="topbar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div>
+      <div class="topbar-user">
+        <div class="topbar-avatar" style="background:#e2e8f0; overflow:hidden">
+          <img src="https://ui-avatars.com/api/?name=Alex+Rivero&background=random" style="width:100%; height:100%" />
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <div class="ml-56 min-h-screen">
-    <div class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
-      <h1 class="text-xl font-bold text-gray-800">Attendance Management</h1>
-      <a href="/api/attendance/mark"
-        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
-        + Mark Attendance
-      </a>
+  <div class="page-body">
+    <div style="font-size:0.75rem; color:var(--text-dim); margin-bottom:8px">Classes <span style="margin:0 4px">›</span> <span style="color:var(--primary); font-weight:500">Advanced Mathematics</span></div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px">
+      <div>
+        <h1 class="page-title">Advanced Mathematics - Section A</h1>
+        <p class="page-subtitle">Manage daily attendance and student participation</p>
+      </div>
+      <div style="display:flex; gap:12px">
+        <button class="btn btn-secondary" style="padding:8px 16px; font-weight:600">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Export PDF
+        </button>
+        <button class="btn btn-primary" style="padding:8px 16px; font-weight:600">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          Submit Daily Log
+        </button>
+      </div>
     </div>
 
-    <div class="p-8">
-      <!-- Search + Date Filter -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-        <form method="GET" action="/api/attendance" class="flex gap-3">
-          <input type="text" name="search" value="<%= search %>"
-            placeholder="Search by student or course..."
-            class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-          <input type="date" name="date" value="<%= date %>"
-            class="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-          <button type="submit"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Filter</button>
-          <% if (search || date) { %>
-            <a href="/api/attendance" class="border border-gray-200 px-4 py-2 rounded-lg text-sm text-gray-600">Clear</a>
-          <% } %>
-        </form>
-      </div>
-
-      <!-- Table -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-        <table class="w-full">
-          <thead>
-            <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
-              <th class="px-6 py-4 text-left">Student</th>
-              <th class="px-6 py-4 text-left">Course</th>
-              <th class="px-6 py-4 text-left">Date</th>
-              <th class="px-6 py-4 text-left">Status</th>
-              <th class="px-6 py-4 text-left">Update</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if (records.length === 0) { %>
-              <tr>
-                <td colspan="5" class="px-6 py-12 text-center text-gray-400">
-                  No attendance records found.
-                  <a href="/api/attendance/mark" class="text-blue-600 hover:underline ml-1">Mark now?</a>
-                </td>
-              </tr>
-            <% } else { %>
-              <% records.forEach(record => { %>
-                <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
-                  <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs font-bold">
-                        <%= record.student?.name?.charAt(0).toUpperCase() %>
-                      </div>
-                      <span class="text-sm font-medium text-gray-800"><%= record.student?.name %></span>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 text-sm text-gray-600"><%= record.course?.course_name %></td>
-                  <td class="px-6 py-4 text-sm text-gray-500">
-                    <%= new Date(record.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
-                  </td>
-                  <td class="px-6 py-4">
-                    <span class="px-2 py-1 text-xs rounded-full font-medium
-                      <%= record.status === 'present' ? 'bg-green-50 text-green-600' :
-                          record.status === 'absent'  ? 'bg-red-50 text-red-500' :
-                          'bg-yellow-50 text-yellow-600' %>">
-                      <%= record.status.charAt(0).toUpperCase() + record.status.slice(1) %>
-                    </span>
-                  </td>
-                  <td class="px-6 py-4">
-                    <form method="POST" action="/api/attendance/<%= record.id %>/status">
-                      <select name="status" onchange="this.form.submit()"
-                        class="text-xs border border-gray-200 rounded px-2 py-1 text-gray-600 focus:outline-none">
-                        <option value="present" <%= record.status === 'present' ? 'selected' : '' %>>Present</option>
-                        <option value="absent"  <%= record.status === 'absent'  ? 'selected' : '' %>>Absent</option>
-                        <option value="late"    <%= record.status === 'late'    ? 'selected' : '' %>>Late</option>
-                      </select>
-                    </form>
-                  </td>
-                </tr>
-              <% }) %>
-            <% } %>
-          </tbody>
-        </table>
-
-        <!-- Pagination -->
-        <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-          <span class="text-sm text-gray-400">
-            Showing <%= Math.min((page-1)*limit+1, total) %> to <%= Math.min(page*limit, total) %> of <%= total %> records
-          </span>
-          <div class="flex gap-2">
-            <% for(let i = 1; i <= totalPages; i++) { %>
-              <a href="/api/attendance?page=<%= i %>"
-                class="w-8 h-8 flex items-center justify-center rounded-lg text-sm
-                  <%= i === page ? 'bg-blue-600 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50' %>">
-                <%= i %>
-              </a>
-            <% } %>
+    <div class="att-grid">
+      <!-- Left Column -->
+      <div style="display:flex; flex-direction:column; gap:24px">
+        <div class="card card-body" style="padding:20px">
+          <h3 style="font-size:1.1rem; font-weight:700; margin:0 0 16px 0">Active Classes</h3>
+          <div class="class-item active">
+            <div class="class-item-title">Advanced Mathematics</div>
+            <div class="class-item-meta">Section A • 09:00 AM</div>
+          </div>
+          <div class="class-item">
+            <div class="class-item-title">Physics II</div>
+            <div class="class-item-meta">Section C • 11:30 AM</div>
+          </div>
+          <div class="class-item">
+            <div class="class-item-title">Intro to Logic</div>
+            <div class="class-item-meta">Section B • 02:00 PM</div>
+          </div>
+          <div class="class-item">
+            <div class="class-item-title">Calculus BC</div>
+            <div class="class-item-meta">Section A • 03:30 PM</div>
           </div>
         </div>
 
-        <!-- Stats -->
-        <div class="grid grid-cols-4 gap-4 p-6 border-t border-gray-100">
-          <div class="bg-green-50 rounded-lg p-4">
-            <div class="text-xs text-green-600 mb-1">PRESENT</div>
-            <div class="text-2xl font-bold text-gray-800"><%= present %></div>
+        <div class="card card-body" style="padding:20px; display:flex; flex-direction:column; align-items:center">
+          <h3 style="font-size:0.9rem; font-weight:600; margin:0 0 24px 0; align-self:flex-start">Today's Attendance</h3>
+          <div style="position:relative; width:140px; height:140px; margin-bottom:24px">
+            <canvas id="attChart"></canvas>
+            <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center">
+              <div style="font-size:1.8rem; font-weight:800; color:var(--text); line-height:1">90%</div>
+              <div style="font-size:0.75rem; color:var(--text-dim)">Present</div>
+            </div>
           </div>
-          <div class="bg-red-50 rounded-lg p-4">
-            <div class="text-xs text-red-500 mb-1">ABSENT</div>
-            <div class="text-2xl font-bold text-gray-800"><%= absent %></div>
+          <div style="display:flex; justify-content:space-around; width:100%; border-top:1px solid var(--border); padding-top:16px">
+            <div style="text-align:center"><div style="color:#059669; font-weight:700; font-size:1.1rem">27</div><div style="font-size:0.7rem; color:var(--text-dim)">P</div></div>
+            <div style="text-align:center"><div style="color:#dc2626; font-weight:700; font-size:1.1rem">2</div><div style="font-size:0.7rem; color:var(--text-dim)">A</div></div>
+            <div style="text-align:center"><div style="color:#d97706; font-weight:700; font-size:1.1rem">1</div><div style="font-size:0.7rem; color:var(--text-dim)">L</div></div>
           </div>
-          <div class="bg-yellow-50 rounded-lg p-4">
-            <div class="text-xs text-yellow-600 mb-1">LATE</div>
-            <div class="text-2xl font-bold text-gray-800"><%= late %></div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div style="display:flex; flex-direction:column; gap:24px">
+        <div class="card" style="display:flex; flex-direction:column">
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center">
+            <div style="display:flex; align-items:center; gap:24px">
+              <div class="tabs-small">
+                <div class="tab-small active">Grid View</div>
+                <div class="tab-small">History</div>
+              </div>
+              <div style="font-size:0.85rem; color:var(--text-dim)">Showing: Oct 12 - Oct 18, 2023</div>
+            </div>
+            <div style="display:flex; gap:8px">
+              <button class="btn btn-secondary" style="padding:6px; border:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+              <button class="btn btn-secondary" style="padding:6px; border:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+            </div>
           </div>
-          <div class="bg-blue-50 rounded-lg p-4">
-            <div class="text-xs text-blue-600 mb-1">ATTENDANCE RATE</div>
-            <div class="text-2xl font-bold text-gray-800"><%= rate %>%</div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:240px">STUDENT NAME</th>
+                <th style="text-align:center; padding:12px 8px">Mon 12</th>
+                <th style="text-align:center; padding:12px 8px">Tue 13</th>
+                <th style="text-align:center; padding:12px 8px">Wed 14</th>
+                <th style="text-align:center; padding:12px 8px">Thu 15</th>
+                <th style="text-align:center; padding:12px 8px; border-left:1px dashed var(--border)">Fri 16 (Today)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% 
+              const attData = [
+                {n:'Alex Abernathy', i:'4492', d:['P','P','L','P','P']},
+                {n:'Bella Chen', i:'4510', d:['P','P','P','P','P']},
+                {n:'Dante Garcia', i:'4521', d:['A','P','P','P','P']},
+                {n:'Elena Lucas', i:'4535', d:['P','P','P','A','P']},
+                {n:'Felix Kim', i:'4540', d:['P','P','P','P','P']},
+                {n:'Grace Hopper', i:'4541', d:['P','P','P','P','P']},
+                {n:'Hiroshi Tanaka', i:'4542', d:['P','P','P','P','P']}
+              ];
+              attData.forEach(s => { 
+                const ini = s.n.split(' ').map(n=>n[0]).join('');
+              %>
+              <tr>
+                <td>
+                  <div style="display:flex; align-items:center; gap:12px">
+                    <div style="width:32px; height:32px; border-radius:50%; background:var(--surface-low); color:var(--text-muted); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600"><%= ini %></div>
+                    <div>
+                      <div style="font-weight:600; color:var(--text); font-size:0.85rem"><%= s.n %></div>
+                      <div style="font-size:0.7rem; color:var(--text-dim)">ID: #<%= s.i %></div>
+                    </div>
+                  </div>
+                </td>
+                <% s.d.forEach((v, idx) => { %>
+                <td style="<%= idx===4?'border-left:1px dashed var(--border)':'' %>">
+                  <div style="display:flex; justify-content:center">
+                    <div class="att-box att-<%= v.toLowerCase() %>"><%= v %></div>
+                  </div>
+                </td>
+                <% }) %>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          <div class="card-header" style="border-top:1px solid var(--border); border-bottom:none; display:flex; justify-content:space-between; align-items:center; padding:16px 24px">
+            <div style="display:flex; gap:16px; font-size:0.75rem">
+              <div style="display:flex; align-items:center; gap:6px"><span style="width:10px; height:10px; border:1px solid rgba(5,150,105,0.2); background:rgba(5,150,105,0.1)"></span> Present</div>
+              <div style="display:flex; align-items:center; gap:6px"><span style="width:10px; height:10px; border:1px solid rgba(220,38,38,0.2); background:rgba(220,38,38,0.1)"></span> Absent</div>
+              <div style="display:flex; align-items:center; gap:6px"><span style="width:10px; height:10px; border:1px solid rgba(217,119,6,0.2); background:rgba(217,119,6,0.1)"></span> Late</div>
+            </div>
+            <div style="font-size:0.75rem; font-style:italic; color:var(--text-dim)">* Auto-saving changes to cloud storage...</div>
+          </div>
+        </div>
+
+        <!-- Bottom row inside right column -->
+        <div style="display:grid; grid-template-columns: 1fr 300px; gap:24px">
+          <div class="card card-body" style="padding:24px">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
+              <h3 style="font-size:1.1rem; font-weight:700; margin:0">Class Notes</h3>
+              <a href="#" style="color:var(--primary); font-size:0.85rem; font-weight:600; text-decoration:none">+ Add Entry</a>
+            </div>
+            <div style="display:flex; gap:24px; padding-bottom:16px; border-bottom:1px solid var(--border); margin-bottom:16px">
+              <div style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap; padding-top:2px">Oct 16, 2023</div>
+              <div style="font-size:0.85rem; color:var(--text); line-height:1.6">Today's lesson focused on 3D trigonometric functions. Majority of students grasped the spatial concepts well. Homework assigned: Page 142, Problems 1-15.</div>
+            </div>
+            <div style="display:flex; gap:24px">
+              <div style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap; padding-top:2px">Oct 15, 2023</div>
+              <div style="font-size:0.85rem; color:var(--text); line-height:1.6">Quiz 4 results returned. Average score: 84%. Two students require extra credit session for logarithmic differentiation.</div>
+            </div>
+          </div>
+
+          <div class="card card-body" style="padding:24px; background:var(--surface-low); border:none">
+            <h3 style="font-size:1.1rem; font-weight:700; margin:0 0 20px 0">Upcoming Deadlines</h3>
+            <div style="display:flex; align-items:center; justify-content:space-between; background:white; padding:12px 16px; border-radius:6px; margin-bottom:12px; border-left:3px solid var(--danger); box-shadow:0 1px 2px rgba(0,0,0,0.02)">
+              <div style="display:flex; align-items:center; gap:12px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--danger)"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <div style="font-size:0.85rem; font-weight:600; color:var(--text)">Mid-term Report</div>
+              </div>
+              <div style="font-size:0.7rem; font-weight:600; color:var(--danger)">Tomorrow</div>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; background:white; padding:12px 16px; border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,0.02)">
+              <div style="display:flex; align-items:center; gap:12px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim)"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <div style="font-size:0.85rem; font-weight:600; color:var(--text)">Trig Project Submission</div>
+              </div>
+              <div style="font-size:0.7rem; font-weight:600; color:var(--text-muted)">Oct 20</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
+<script>
+  const ctx = document.getElementById('attChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Present', 'Absent', 'Late'],
+      datasets: [{
+        data: [27, 2, 1],
+        backgroundColor: ['#3b49df', '#e2e8f0', '#94a3b8'],
+        borderWidth: 0,
+        cutout: '75%'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      animation: { animateScale: true }
+    }
+  });
+</script>
 </body>
 </html>

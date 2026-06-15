@@ -6,12 +6,14 @@ import { StudentPortalController } from './student-portal.controller';
 import { StudentService } from './student.service';
 import { Student } from './student.entity';
 import { AuthModule } from '../auth/auth.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Student]),
     HttpModule,
     forwardRef(() => AuthModule),
+    NotificationsModule,
   ],
   controllers: [StudentController, StudentPortalController],
   providers: [StudentService],

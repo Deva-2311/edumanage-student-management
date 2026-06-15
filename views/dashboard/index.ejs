@@ -1,185 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title><%= title %></title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title><%= title %> — EduManage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/edumanage.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
-<body class="bg-gray-50">
+<body>
+<%- include('../partials/sidebar', { currentPage:'dashboard', user }) %>
+<div id="main">
+  <%- include('../partials/topbar', { user }) %>
+  <div class="page-body">
 
-  <%- include('../partials/sidebar', { currentPage: 'dashboard', user }) %>
-
-  <!-- Main Content -->
-  <div class="ml-56 min-h-screen">
-
-    <!-- Top Bar -->
-    <div class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
-      <h1 class="text-xl font-bold text-gray-800">Dashboard Overview</h1>
-      <div class="flex items-center gap-4">
-        <input type="text" placeholder="Search students, courses..."
-          class="border border-gray-200 rounded-lg px-4 py-2 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-          <%= user?.name?.charAt(0) ?? 'A' %>
+    <!-- KPI Cards -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
+      <!-- Total Students -->
+      <div class="stat-box">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="stat-box-label">Total Students</div>
+            <div class="stat-box-val">1,240</div>
+            <div class="stat-box-trend">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+              +12% from last term
+            </div>
+          </div>
+          <div class="stat-box-icon" style="background:#e0e7ff; color:#3b49df">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+        </div>
+      </div>
+      <!-- Active Courses -->
+      <div class="stat-box">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="stat-box-label">Active Courses</div>
+            <div class="stat-box-val">42</div>
+            <div class="stat-box-trend" style="color:var(--text-dim)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Stable enrollment
+            </div>
+          </div>
+          <div class="stat-box-icon" style="background:#f0f9ff; color:#0284c7">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          </div>
+        </div>
+      </div>
+      <!-- Revenue -->
+      <div class="stat-box">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="stat-box-label">Revenue</div>
+            <div class="stat-box-val">$124k</div>
+            <div class="stat-box-trend">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+              8.4% monthly growth
+            </div>
+          </div>
+          <div class="stat-box-icon" style="background:#d1fae5; color:#059669">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
+          </div>
+        </div>
+      </div>
+      <!-- System Health -->
+      <div class="stat-box">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="stat-box-label">System Health</div>
+            <div class="stat-box-val">99.8%</div>
+            <div class="stat-box-trend">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              All systems operational
+            </div>
+          </div>
+          <div class="stat-box-icon" style="background:#fee2e2; color:#dc2626">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="p-8">
-
-      <!-- Stat Cards -->
-      <div class="grid grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-xl">👤</div>
-            <span class="text-green-500 text-sm font-semibold">↑ Active</span>
+    <!-- Charts Row -->
+    <div style="display:grid;grid-template-columns:2.5fr 1fr;gap:24px;margin-bottom:24px">
+      <div class="card">
+        <div class="card-header" style="border:none">
+          <div>
+            <div class="card-title">Enrollment Trends</div>
+            <div class="card-subtitle">Student registration over the last 6 months</div>
           </div>
-          <div class="text-gray-500 text-sm">Total Students</div>
-          <div class="text-3xl font-bold text-gray-800 mt-1"><%= totalStudents %></div>
+          <div class="badge-simple">H1 2024</div>
         </div>
-
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center text-xl">📚</div>
-            <span class="text-blue-500 text-sm font-semibold">↑ Active</span>
-          </div>
-          <div class="text-gray-500 text-sm">Total Courses</div>
-          <div class="text-3xl font-bold text-gray-800 mt-1"><%= totalCourses %></div>
-        </div>
-
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-xl">✅</div>
-            <span class="text-green-500 text-sm font-semibold">↑ <%= attendanceRate %>%</span>
-          </div>
-          <div class="text-gray-500 text-sm">Attendance Today</div>
-          <div class="text-3xl font-bold text-gray-800 mt-1"><%= attendanceRate %>%</div>
+        <div style="padding:0 24px 24px"><canvas id="enrollChart" height="240"></canvas></div>
+        <div style="display:flex;justify-content:center;gap:24px;padding-bottom:24px;font-size:0.8rem;color:var(--text-muted);font-weight:500;">
+          <div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:#3b49df;display:inline-block"></span>Actual</div>
+          <div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:#c7d2fe;display:inline-block"></span>Target</div>
         </div>
       </div>
 
-      <!-- Charts Row -->
-      <div class="grid grid-cols-2 gap-6 mb-8">
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h2 class="font-semibold text-gray-800">Enrollment Trends</h2>
-              <p class="text-gray-400 text-xs">Student growth over last 6 months</p>
+      <div class="card">
+        <div class="card-header" style="border:none"><div class="card-title" style="font-size:1.1rem">Top Departments</div></div>
+        <div class="card-body" style="padding-top:0">
+          <% [
+            {code:'CS', name:'Computer Science', num:'482 Students', pct:'98%', c:'#e0e7ff', tc:'#3b49df'},
+            {code:'BA', name:'Business Admin', num:'310 Students', pct:'94%', c:'#d1fae5', tc:'#059669'},
+            {code:'EN', name:'Engineering', num:'255 Students', pct:'91%', c:'#f1f5f9', tc:'#475569'},
+            {code:'LI', name:'Life Sciences', num:'193 Students', pct:'88%', c:'#ede9fe', tc:'#7c3aed'}
+          ].forEach(d => { %>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="width:40px;height:40px;border-radius:8px;background:<%= d.c %>;color:<%= d.tc %>;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem"><%= d.code %></div>
+              <div>
+                <div style="font-weight:600;color:var(--text);font-size:0.9rem"><%= d.name %></div>
+                <div style="font-size:0.75rem;color:var(--text-dim)"><%= d.num %></div>
+              </div>
             </div>
-            <span class="text-blue-600 font-bold text-lg"><%= totalEnrollments %></span>
+            <div style="font-weight:700;color:var(--success)"><%= d.pct %></div>
           </div>
-          <canvas id="enrollmentChart" height="120"></canvas>
+          <% }) %>
+          <div style="text-align:center;margin-top:24px"><a href="#" style="color:#3b49df;font-size:0.8rem;font-weight:600;text-decoration:none">View All Departments</a></div>
         </div>
+      </div>
+    </div>
 
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h2 class="font-semibold text-gray-800">Attendance Overview</h2>
-              <p class="text-gray-400 text-xs">Weekly breakdown</p>
+    <!-- Audit Log -->
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-header">
+        <div class="card-title">System Audit Log</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" style="padding:6px 10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg></button>
+          <button class="btn btn-secondary" style="padding:6px 10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>TIMESTAMP</th><th>USER</th><th>ACTION</th><th>OBJECT</th><th>STATUS</th></tr></thead>
+        <tbody>
+          <% [
+            {t:'2024-05-24 14:32:11', ini:'JD', name:'Jane Doe (Registrar)', act:'Created Student Profile', obj:'STU-9901', s:'Success', sc:'success'},
+            {t:'2024-05-24 14:15:05', ini:'SY', name:'System Cron', act:'Backup Database', obj:'PROD-DB-01', s:'Success', sc:'success'},
+            {t:'2024-05-24 13:58:22', ini:'MA', name:'Marcus Aurel (IT)', act:'Failed Login Attempt', obj:'Admin Portal', s:'Denied', sc:'danger'},
+            {t:'2024-05-24 13:42:18', ini:'JD', name:'Jane Doe (Registrar)', act:'Updated Grade Policy', obj:'Fall 2024', s:'Pending', sc:'active'}
+          ].forEach(r => { %>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;color:var(--text-dim)"><%= r.t %></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:28px;height:28px;border-radius:50%;background:#ede9fe;color:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600"><%= r.ini %></div>
+                <span style="font-weight:600;color:var(--text)"><%= r.name %></span>
+              </div>
+            </td>
+            <td><%= r.act %></td>
+            <td style="font-weight:600;color:var(--text)"><%= r.obj %></td>
+            <td><span class="badge badge-<%= r.sc %>" style="border-radius:4px"><%= r.s %></span></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      <div class="card-header" style="border-top:1px solid var(--border);border-bottom:none;background:var(--surface)">
+        <span style="font-size:0.75rem;color:var(--text-dim)">Showing 4 of 1,240 entries</span>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-secondary" style="font-size:0.75rem;padding:6px 12px">Previous</button>
+          <button class="btn btn-secondary" style="font-size:0.75rem;padding:6px 12px;color:var(--text);font-weight:600">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Actions Row -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+      <!-- Action 1 -->
+      <div class="card" style="background:#4f46e5;color:white;border:none">
+        <div class="card-body" style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
             </div>
-            <span class="text-blue-600 font-bold text-lg"><%= attendanceRate %>%</span>
+            <div>
+              <div style="font-weight:700;font-size:1.1rem;margin-bottom:4px">Annual Report Due</div>
+              <div style="font-size:0.75rem;opacity:0.9">Submission window closes in 4 days.</div>
+            </div>
           </div>
-          <canvas id="attendanceChart" height="120"></canvas>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </div>
       </div>
 
-      <!-- Recent Activity -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-          <h2 class="font-semibold text-gray-800">Recent Activity</h2>
-          <a href="/api/logs" class="text-blue-600 text-sm font-medium hover:underline">View All</a>
+      <!-- Action 2 -->
+      <div class="card">
+        <div class="card-body" style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:48px;height:48px;border-radius:12px;background:var(--surface-low);color:var(--text-dim);display:flex;align-items:center;justify-content:center">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:1.1rem;color:var(--text);margin-bottom:4px">Upload Semester Data</div>
+              <div style="font-size:0.75rem;color:var(--text-dim)">CSV or Excel format accepted.</div>
+            </div>
+          </div>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim)"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </div>
-        <table class="w-full">
-          <thead>
-            <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
-              <th class="px-6 py-3 text-left">Student</th>
-              <th class="px-6 py-3 text-left">Course</th>
-              <th class="px-6 py-3 text-left">Status</th>
-              <th class="px-6 py-3 text-left">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if (recentEnrollments.length === 0) { %>
-              <tr>
-                <td colspan="4" class="px-6 py-8 text-center text-gray-400 text-sm">No recent activity yet</td>
-              </tr>
-            <% } else { %>
-              <% recentEnrollments.forEach(enrollment => { %>
-                <tr class="border-b border-gray-50 hover:bg-gray-50">
-                  <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs font-bold">
-                        <%= enrollment.student?.name?.charAt(0) %>
-                      </div>
-                      <span class="text-sm font-medium text-gray-800"><%= enrollment.student?.name %></span>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 text-sm text-gray-600"><%= enrollment.course?.course_name %></td>
-                  <td class="px-6 py-4">
-                    <span class="px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full font-medium">
-                      <%= enrollment.status %>
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 text-sm text-gray-400">
-                    <%= new Date(enrollment.enrolled_at).toLocaleDateString() %>
-                  </td>
-                </tr>
-              <% }) %>
-            <% } %>
-          </tbody>
-        </table>
       </div>
 
+      <!-- Action 3 -->
+      <div class="card">
+        <div class="card-body" style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:48px;height:48px;border-radius:12px;background:var(--danger-bg);color:var(--danger);display:flex;align-items:center;justify-content:center">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:1.1rem;color:var(--text);margin-bottom:4px">System Maintenance</div>
+              <div style="font-size:0.75rem;color:var(--text-dim)">Scheduled: Sunday 02:00 AM.</div>
+            </div>
+          </div>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim)"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </div>
+      </div>
     </div>
   </div>
-
-  <!-- Charts JS -->
-  <script>
-    // Enrollment Line Chart
-    new Chart(document.getElementById('enrollmentChart'), {
-      type: 'line',
-      data: {
-        labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN'],
-        datasets: [{
-          data: [30, 45, 38, 60, 72,  totalEnrollments ],
-          borderColor: '#2563EB',
-          backgroundColor: 'rgba(37,99,235,0.08)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.4,
-          pointRadius: 0,
-        }]
-      },
-      options: {
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { display: false } },
-          y: { grid: { color: '#f1f5f9' }, beginAtZero: true }
+</div>
+<script>
+  // Chart.js exact implementation to match the image
+  const ctx = document.getElementById('enrollChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [
+        {
+          label: 'Actual',
+          data: [120, 190, 300, 500, 200, 300],
+          backgroundColor: '#3b49df',
+          borderRadius: 4,
+          barPercentage: 0.5,
+          categoryPercentage: 0.5
+        },
+        {
+          label: 'Target',
+          data: [150, 200, 280, 450, 250, 350],
+          backgroundColor: '#c7d2fe',
+          borderRadius: 4,
+          barPercentage: 0.5,
+          categoryPercentage: 0.5
         }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 12 }, color: '#64748b' }, border: { display: false } },
+        y: { display: false, border: { display: false } }
       }
-    });
-
-    // Attendance Bar Chart
-    new Chart(document.getElementById('attendanceChart'), {
-      type: 'bar',
-      data: {
-        labels: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
-        datasets: [{
-          data: [88, 92, 95, 90,] [attendanceRate || 85],
-          backgroundColor: (ctx) =>
-            ctx.dataIndex === 4 ? '#2563EB' : '#BFDBFE',
-          borderRadius: 6,
-        }]
-      },
-      options: {
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { display: false } },
-          y: { grid: { color: '#f1f5f9' }, beginAtZero: true, max: 100 }
-        }
-      }
-    });
-  </script>
-
+    }
+  });
+</script>
 </body>
 </html>

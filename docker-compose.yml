@@ -1,0 +1,34 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_NAME=edumanage
+      - JWT_SECRET=super_secret_jwt_key
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/usr/src/app/uploads
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - '5433:5432' # Exposed on 5433 to avoid conflicts with local DBs
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=edumanage
+    volumes:
+      - edumanage-data:/var/lib/postgresql/data
+
+volumes:
+  edumanage-data:

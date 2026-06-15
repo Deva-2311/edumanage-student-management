@@ -1,137 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <title><%= title %></title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title><%= title %> — EduManage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/edumanage.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
-<body class="bg-gray-50">
-  <%- include('../partials/sidebar', { currentPage, user }) %>
-
-  <div class="ml-56 min-h-screen">
-    <div class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
-      <h1 class="text-xl font-bold text-gray-800">Marks Management</h1>
-      <a href="/api/marks/add"
-        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
-        + Add Marks
-      </a>
+<body>
+<%- include('../partials/sidebar', { currentPage, user }) %>
+<div id="main">
+  <%- include('../partials/topbar', { user, breadcrumb:'Marks' }) %>
+  <div class="page-body">
+    <div class="page-header">
+      <div><h1 class="page-title">Marks Management</h1><p class="page-subtitle">Academic performance records and grade analytics</p></div>
+      <% if(user?.role!=='student'){%><a href="/api/marks/add" class="btn btn-primary">+ Add Marks</a><% }%>
     </div>
 
-    <div class="p-8">
-      <!-- Search -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-        <form method="GET" action="/api/marks" class="flex gap-3">
-          <input type="text" name="search" value="<%= search %>"
-            placeholder="Search by student or course..."
-            class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-          <button type="submit"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Search</button>
-          <% if (search) { %>
-            <a href="/api/marks" class="border border-gray-200 px-4 py-2 rounded-lg text-sm text-gray-600">Clear</a>
-          <% } %>
-        </form>
+    <!-- Grade distribution -->
+    <div style="display:grid;grid-template-columns:1fr 280px;gap:14px;margin-bottom:14px">
+      <div class="card card-body" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        <span style="font-size:0.72rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;margin-right:6px">Grade Distribution:</span>
+        <% Object.entries(gradeCount).forEach(([g,c])=>{ const gc=g==='A+'?'grade-ap':g==='A'?'grade-a':g==='B'?'grade-b':g==='C'?'grade-c':g==='D'?'grade-d':'grade-f'; %>
+        <span class="badge <%= gc %>" style="padding:4px 12px;font-size:0.8rem"><%= g %> <span style="opacity:0.7;font-size:0.72rem">(<%= c %>)</span></span>
+        <% }) %>
       </div>
+      <div class="card card-body" style="display:flex;align-items:center;gap:14px">
+        <canvas id="gradeChart" style="max-width:80px;max-height:80px;flex-shrink:0"></canvas>
+        <div style="font-size:0.72rem;color:#64748b">Grade<br>breakdown</div>
+      </div>
+    </div>
 
-      <!-- Table -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-        <table class="w-full">
-          <thead>
-            <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
-              <th class="px-6 py-4 text-left">Student</th>
-              <th class="px-6 py-4 text-left">Course</th>
-              <th class="px-6 py-4 text-left">Exam Type</th>
-              <th class="px-6 py-4 text-left">Marks</th>
-              <th class="px-6 py-4 text-left">Grade</th>
-              <th class="px-6 py-4 text-left">Actions</th>
-            </tr>
-          </thead>
+    <!-- Search -->
+    <div class="card card-body" style="margin-bottom:14px">
+      <form method="GET" action="/api/marks" style="display:flex;gap:10px;flex-wrap:wrap">
+        <div class="search-wrap" style="flex:1;min-width:200px">
+          <span class="search-icon">🔍</span>
+          <input type="text" name="search" value="<%= search %>" placeholder="Search by student or course…" class="form-input"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+        <% if(search){%><a href="/api/marks" class="btn btn-secondary">Clear</a><% }%>
+      </form>
+    </div>
+
+    <div class="card">
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Student</th><th>Course</th><th>Exam</th><th>Score</th><th>%</th><th>Grade</th><th>Actions</th></tr></thead>
           <tbody>
-            <% if (marks.length === 0) { %>
-              <tr>
-                <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                  No marks found.
-                  <a href="/api/marks/add" class="text-blue-600 hover:underline ml-1">Add now?</a>
-                </td>
-              </tr>
-            <% } else { %>
-              <% marks.forEach(mark => { %>
-                <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
-                  <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs font-bold">
-                        <%= mark.student?.name?.charAt(0).toUpperCase() %>
-                      </div>
-                      <span class="text-sm font-medium text-gray-800"><%= mark.student?.name %></span>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 text-sm text-gray-600"><%= mark.course?.course_name %></td>
-                  <td class="px-6 py-4 text-sm text-gray-600"><%= mark.exam_type %></td>
-                  <td class="px-6 py-4 text-sm font-semibold text-gray-800">
-                    <%= mark.marks_obtained %>/<%= mark.max_marks %>
-                  </td>
-                  <td class="px-6 py-4">
-                    <span class="px-2 py-1 text-xs rounded-full font-bold
-                      <%= mark.grade === 'A+' ? 'bg-green-100 text-green-700' :
-                          mark.grade === 'A'  ? 'bg-green-50 text-green-600' :
-                          mark.grade === 'B'  ? 'bg-blue-50 text-blue-600' :
-                          mark.grade === 'C'  ? 'bg-yellow-50 text-yellow-600' :
-                          mark.grade === 'D'  ? 'bg-orange-50 text-orange-500' :
-                          'bg-red-50 text-red-500' %>">
-                      <%= mark.grade %>
-                    </span>
-                  </td>
-                  <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                      <a href="/api/marks/<%= mark.id %>/edit"
-                        class="text-blue-600 hover:text-blue-700 text-xs font-medium">Edit</a>
-                      <form method="POST" action="/api/marks/<%= mark.id %>/delete"
-                        onsubmit="return confirm('Delete this mark?')">
-                        <button type="submit" class="text-red-400 hover:text-red-600 text-xs font-medium">Delete</button>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-              <% }) %>
-            <% } %>
+            <% if(!marks.length){ %>
+            <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📝</div><p>No marks recorded</p><a href="/api/marks/add" class="btn btn-primary btn-sm">+ Add First Record</a></div></td></tr>
+            <% } else { marks.forEach(m=>{ const pct=Math.round((m.marks_obtained/m.max_marks)*100); const gc=m.grade==='A+'?'grade-ap':m.grade==='A'?'grade-a':m.grade==='B'?'grade-b':m.grade==='C'?'grade-c':m.grade==='D'?'grade-d':'grade-f'; %>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar avatar-indigo"><%= (m.student?.name??'?').charAt(0).toUpperCase() %></div><span style="font-weight:500;color:#191c1e"><%= m.student?.name %></span></div></td>
+              <td><%= m.course?.course_name %></td>
+              <td><span class="badge badge-violet"><%= m.exam_type %></span></td>
+              <td style="font-family:'JetBrains Mono',monospace"><%= m.marks_obtained %>/<%= m.max_marks %></td>
+              <td style="font-weight:600;color:<%=pct>=80?'#059669':pct>=60?'#d97706':'#be123c'%>"><%= pct %>%</td>
+              <td><span class="badge <%= gc %>"><%= m.grade %></span></td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <% if(user?.role!=='student'){%><a href="/api/marks/<%= m.id %>/edit" class="btn btn-secondary btn-sm">Edit</a><% }%>
+                  <form id="dm<%= m.id %>" method="POST" action="/api/marks/<%= m.id %>/delete">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('dm<%=m.id%>','this mark record')">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            <% }) } %>
           </tbody>
         </table>
-
-        <!-- Pagination -->
-        <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-          <span class="text-sm text-gray-400">
-            Showing <%= Math.min((page-1)*limit+1, total) %> to <%= Math.min(page*limit, total) %> of <%= total %> records
-          </span>
-          <div class="flex gap-2">
-            <% for(let i = 1; i <= totalPages; i++) { %>
-              <a href="/api/marks?page=<%= i %>"
-                class="w-8 h-8 flex items-center justify-center rounded-lg text-sm
-                  <%= i === page ? 'bg-blue-600 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50' %>">
-                <%= i %>
-              </a>
-            <% } %>
-          </div>
-        </div>
-
-        <!-- Grade Stats -->
-        <div class="p-6 border-t border-gray-100">
-          <h3 class="text-sm font-semibold text-gray-600 mb-3">Grade Distribution</h3>
-          <div class="flex gap-3 flex-wrap">
-            <% Object.entries(gradeCount).forEach(([grade, count]) => { %>
-              <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-2">
-                <span class="font-bold text-sm
-                  <%= grade === 'A+' ? 'text-green-700' :
-                      grade === 'A'  ? 'text-green-600' :
-                      grade === 'B'  ? 'text-blue-600' :
-                      grade === 'C'  ? 'text-yellow-600' :
-                      grade === 'D'  ? 'text-orange-500' :
-                      'text-red-500' %>"><%= grade %></span>
-                <span class="text-gray-500 text-sm"><%= count %> students</span>
-              </div>
-            <% }) %>
-          </div>
+      </div>
+      <div class="table-footer">
+        <span class="table-meta">Showing <%= Math.min((page-1)*limit+1,total) %> – <%= Math.min(page*limit,total) %> of <%= total %> records</span>
+        <div class="pagination">
+          <% for(let i=1;i<=totalPages;i++){%><a href="/api/marks?page=<%=i%>" class="page-btn <%=i===page?'active':''%>"><%=i%></a><% }%>
         </div>
       </div>
     </div>
   </div>
+</div>
+<%- include('../partials/scripts') %>
+<script>
+  const gc=<%- JSON.stringify(gradeCount) %>;
+  const cols={'A+':'#059669','A':'#34d399','B':'#0284c7','C':'#d97706','D':'#ea580c','F':'#be123c'};
+  const labels=Object.keys(gc),vals=Object.values(gc);
+  if(document.getElementById('gradeChart')&&vals.some(v=>v>0)){
+    new Chart(document.getElementById('gradeChart'),{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:labels.map(l=>cols[l]||'#4f46e5'),borderWidth:0,hoverOffset:4}]},options:{cutout:'70%',plugins:{legend:{display:false}}}});
+  }
+</script>
 </body>
 </html>

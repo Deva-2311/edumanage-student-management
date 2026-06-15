@@ -1,0 +1,42 @@
+<div id="toast-container"></div>
+<div id="confirm-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Confirm Delete</h3>
+      <button class="modal-close" onclick="closeModal('confirm-modal')">✕</button>
+    </div>
+    <p style="font-size:0.82rem;color:#64748b;margin:0 0 20px">
+      Are you sure you want to delete <strong id="confirm-item-name">this item</strong>? This action cannot be undone.
+    </p>
+    <div style="display:flex;gap:10px">
+      <button onclick="closeModal('confirm-modal')" class="btn btn-secondary" style="flex:1">Cancel</button>
+      <button id="confirm-delete-btn" class="btn btn-danger" style="flex:1">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showToast(msg, type='success') {
+  const icons = {success:'✓', error:'✗', warning:'⚠'};
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<span style="font-size:1rem">${icons[type]||'ℹ'}</span><span class="toast-msg">${msg}</span><span class="toast-close" onclick="removeToast(this.parentElement)">✕</span>`;
+  c.appendChild(t);
+  setTimeout(() => removeToast(t), 4000);
+}
+function removeToast(el) { el.classList.add('removing'); setTimeout(() => el.remove(), 250); }
+const _p = new URLSearchParams(window.location.search);
+if (_p.get('success')) showToast(decodeURIComponent(_p.get('success')), 'success');
+if (_p.get('error'))   showToast(decodeURIComponent(_p.get('error')),   'error');
+
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function confirmDelete(formId, name) {
+  openModal('confirm-modal');
+  document.getElementById('confirm-item-name').textContent = name || 'this item';
+  document.getElementById('confirm-delete-btn').onclick = () => document.getElementById(formId).submit();
+}
+document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) closeModal(o.id); }));
+document.addEventListener('keydown', e => { if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>closeModal(m.id)); });
+</script>

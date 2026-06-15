@@ -1,6 +1,6 @@
 import {
   Controller, Post, Body, Get, Render, Res, Req,
-  UseGuards, Param,
+  UseGuards, Param, Query
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LogsService } from '../logs/logs.service';
@@ -21,29 +21,11 @@ export class AuthController {
 
   // ───── Portal ─────────────────────────────────────────────
   @Get('login')
-  @Render('auth/portal')
-  portal() {
-    return { title: 'EduManage — Select Portal' };
+  @Render('auth/login')
+  portal(@Query('error') error?: string) {
+    return { title: 'Login — EduManage', error: error || null };
   }
 
-  // ───── Login pages ────────────────────────────────────────
-  @Get('login/admin')
-  @Render('auth/login-admin')
-  adminLoginPage() {
-    return { title: 'Admin Login', error: null };
-  }
-
-  @Get('login/teacher')
-  @Render('auth/login-teacher')
-  teacherLoginPage() {
-    return { title: 'Teacher Login', error: null };
-  }
-
-  @Get('login/student')
-  @Render('auth/login-student')
-  studentLoginPage() {
-    return { title: 'Student Login', error: null };
-  }
 
   // ───── Reset Password pages (teacher & student only) ──────
   @Get('reset-password/teacher')
@@ -54,7 +36,7 @@ export class AuthController {
       color: 'emerald',
       icon: '👩‍🏫',
       portalLabel: 'Teacher',
-      backUrl: '/api/login/teacher',
+      backUrl: '/api/login',
       error: null,
       success: false,
     });
@@ -68,7 +50,7 @@ export class AuthController {
       color: 'purple',
       icon: '🎒',
       portalLabel: 'Student',
-      backUrl: '/api/login/student',
+      backUrl: '/api/login',
       error: null,
       success: false,
     });
@@ -81,7 +63,7 @@ export class AuthController {
     const color = isTeacher ? 'emerald' : 'purple';
     const icon = isTeacher ? '👩‍🏫' : '🎒';
     const portalLabel = isTeacher ? 'Teacher' : 'Student';
-    const backUrl = isTeacher ? '/api/login/teacher' : '/api/login/student';
+    const backUrl = '/api/login';
 
     if (!body.new_password || body.new_password !== body.confirm_password) {
       return res.render('auth/reset-password', {
@@ -127,11 +109,7 @@ export class AuthController {
       }
       return res.redirect('/api/dashboard');
     } catch (error) {
-      const roleHint = body.role ?? 'admin';
-      let view = 'auth/login-admin';
-      if (roleHint === 'teacher') view = 'auth/login-teacher';
-      if (roleHint === 'student') view = 'auth/login-student';
-      return res.render(view, { title: 'Login', error: 'Invalid email or password' });
+      return res.redirect('/api/login?error=Invalid+email+or+password');
     }
   }
 

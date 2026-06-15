@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { ApiModeMiddleware } from './common/api-mode.middleware';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
@@ -17,6 +18,9 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { MarksModule } from './marks/marks.module';
 import { LogsModule } from './logs/logs.module';
 import { SettingsModule } from './settings/settings.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ReportsModule } from './reports/reports.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -44,6 +48,13 @@ import { SettingsModule } from './settings/settings.module';
     AttendanceModule,
     MarksModule,
     SettingsModule,
+    NotificationsModule,
+    ReportsModule,
+    AnalyticsModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ApiModeMiddleware).forRoutes('*');
+  }
+}

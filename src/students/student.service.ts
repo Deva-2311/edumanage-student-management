@@ -7,6 +7,8 @@ import { UpdateStudentDto } from './dto/update-student.dto';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { NotificationsService } from '../notifications/notifications.service';
+import { WebhookService } from '../notifications/webhook.service';
 
 @Injectable()
 export class StudentService {
@@ -15,6 +17,8 @@ export class StudentService {
     private studentRepo: Repository<Student>,
     private httpService: HttpService,
     private configService: ConfigService,
+    private notificationsService: NotificationsService,
+    private webhookService: WebhookService,
   ) {}
 
   // Get all students with optional search + pagination
@@ -55,8 +59,9 @@ export class StudentService {
     const student = this.studentRepo.create(dto);
     const saved = await this.studentRepo.save(student);
 
-    // Fire webhook for n8n/Zapier
-    await this.fireWebhook(saved);
+    // Fire webhook for n8n/Zapier and send email
+    await this.webhookService.notifyNewStudent(saved);
+    await this.notificationsService.sendWelcomeEmail(saved.email, saved.name);
 
     return saved;
   }
@@ -75,26 +80,5 @@ export class StudentService {
     return { message: 'Student deleted successfully' };
   }
 
-  // Fire webhook to n8n/Zapier
-  private async fireWebhook(student: Student) {
-    const webhookUrl = this.configService.get<string>('WEBHOOK_URL');
-    if (!webhookUrl) return;
 
-    try {
-      await firstValueFrom(
-        this.httpService.post(webhookUrl, {
-          event: 'student.created',
-          student: {
-            id: student.id,
-            name: student.name,
-            email: student.email,
-            department: student.department,
-          },
-          timestamp: new Date().toISOString(),
-        }),
-      );
-    } catch (err) {
-      console.log('Webhook failed (non-critical):', err.message);
-    }
-  }
 }

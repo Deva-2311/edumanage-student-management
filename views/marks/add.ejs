@@ -1,117 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <title><%= title %></title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title><%= title %> — EduManage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/edumanage.css"/>
 </head>
-<body class="bg-gray-50">
-  <%- include('../partials/sidebar', { currentPage, user }) %>
+<body>
+<%- include('../partials/sidebar', { currentPage, user }) %>
+<div id="main">
+  <%- include('../partials/topbar', { user, breadcrumb:'Marks › Add' }) %>
+  <div class="page-body" style="max-width:900px">
+    <a href="/api/marks" style="font-size:0.78rem;color:#64748b;text-decoration:none;margin-bottom:14px;display:inline-block">← Back to Marks</a>
+    <div class="page-header"><div><h1 class="page-title">Record Student Marks</h1><p class="page-subtitle">Grade calculates automatically as you type</p></div></div>
+    <% if(error){ %><div class="alert alert-error">✗ <%= error %></div><% } %>
 
-  <div class="ml-56 min-h-screen">
-    <div class="bg-white border-b border-gray-200 px-8 py-4">
-      <div class="text-xs text-gray-400 mb-1">Marks › Add Marks</div>
-      <h1 class="text-xl font-bold text-gray-800">Add Student Marks</h1>
-      <p class="text-gray-400 text-sm">Record academic performance for the current semester</p>
-    </div>
-
-    <div class="p-8">
-      <% if (error) { %>
-        <div class="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-6 text-sm"><%= error %></div>
-      <% } %>
-
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 max-w-2xl">
+    <div style="display:grid;grid-template-columns:1fr 260px;gap:16px">
+      <div class="card card-body">
         <form method="POST" action="/api/marks/add">
-          <div class="grid grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Select Student <span class="text-red-500">*</span></label>
-              <select name="student_id" required
-                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Search and select student...</option>
-                <% students.forEach(student => { %>
-                  <option value="<%= student.id %>"><%= student.name %> — <%= student.department %></option>
-                <% }) %>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div class="form-group">
+              <label class="form-label">Student *</label>
+              <select name="student_id" class="form-select" required>
+                <option value="">Select student…</option>
+                <% students.forEach(s=>{%><option value="<%= s.id %>"><%= s.name %> — <%= s.department %></option><% }) %>
               </select>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Select Course <span class="text-red-500">*</span></label>
-              <select name="course_id" required
-                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Choose a course...</option>
-                <% courses.forEach(course => { %>
-                  <option value="<%= course.id %>"><%= course.course_code %> — <%= course.course_name %></option>
-                <% }) %>
+            <div class="form-group">
+              <label class="form-label">Course *</label>
+              <select name="course_id" class="form-select" required>
+                <option value="">Select course…</option>
+                <% courses.forEach(c=>{%><option value="<%= c.id %>"><%= c.course_code %> — <%= c.course_name %></option><% }) %>
               </select>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Exam Type <span class="text-red-500">*</span></label>
-              <select name="exam_type" required
-                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Select exam type...</option>
-                <option value="Midterm">Midterm</option>
-                <option value="Final Exam">Final Exam</option>
-                <option value="Assignment">Assignment</option>
-                <option value="Quiz">Quiz</option>
-                <option value="Lab">Lab</option>
-                <option value="Project">Project</option>
+            <div class="form-group">
+              <label class="form-label">Exam Type *</label>
+              <select name="exam_type" class="form-select" required>
+                <option value="">Select type…</option>
+                <% ['Midterm','Final Exam','Assignment','Quiz','Lab','Project'].forEach(t=>{%><option><%= t %></option><% }) %>
               </select>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Maximum Marks <span class="text-red-500">*</span></label>
-              <input type="number" name="max_marks" value="100" required min="1"
-                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-            </div>
-            <div class="col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Marks Obtained <span class="text-red-500">*</span></label>
-              <input type="number" name="marks_obtained" id="marks_obtained"
-                placeholder="Enter marks" required min="0" step="0.01"
-                oninput="calculateGrade()"
-                class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+            <div class="form-group">
+              <label class="form-label">Maximum Marks *</label>
+              <input type="number" name="max_marks" id="max_marks" value="100" min="1" class="form-input" oninput="calcGrade()" required/>
             </div>
           </div>
-
-          <!-- Live Grade Preview -->
-          <div class="mt-4 bg-blue-50 rounded-lg p-4 flex items-center justify-between">
-            <div>
-              <div class="text-xs text-blue-600 font-semibold uppercase mb-1">Calculated Grade</div>
-              <div class="text-2xl font-bold text-blue-700" id="gradeDisplay">--</div>
-              <div class="text-xs text-blue-400 mt-1">Grade updates automatically based on marks entered</div>
-            </div>
-            <button type="button" onclick="calculateGrade()"
-              class="border border-blue-300 text-blue-600 text-sm px-4 py-2 rounded-lg hover:bg-blue-100">
-              Calculate Grade
-            </button>
+          <div class="form-group">
+            <label class="form-label">Marks Obtained *</label>
+            <input type="number" name="marks_obtained" id="marks_obtained" placeholder="Enter marks" min="0" step="0.01" class="form-input" oninput="calcGrade()" required/>
           </div>
-
-          <div class="flex items-center gap-4 mt-6">
-            <button type="submit"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition text-sm">
-              Save Marks
-            </button>
-            <a href="/api/marks"
-              class="border border-gray-200 text-gray-600 font-medium px-6 py-2.5 rounded-lg text-sm hover:bg-gray-50">
-              Cancel
-            </a>
+          <div style="border-top:1px solid #e2e8f0;margin-top:16px;padding-top:16px;display:flex;gap:10px">
+            <button type="submit" class="btn btn-primary">Save Marks</button>
+            <a href="/api/marks" class="btn btn-secondary">Cancel</a>
           </div>
         </form>
       </div>
+
+      <!-- Live Grade Preview -->
+      <div class="grade-preview" id="grade-card" style="align-self:start">
+        <div style="font-size:0.65rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px">Live Grade Preview</div>
+        <div class="grade-letter" id="grade-letter" style="color:#cbd5e1">--</div>
+        <div class="grade-pct" id="grade-pct">Enter marks above</div>
+        <div style="border-top:1px solid #e2e8f0;margin:14px 0;padding-top:14px">
+          <div style="font-size:0.68rem;font-weight:600;color:#64748b;margin-bottom:8px">GRADE SCALE</div>
+          <% [['A+','90–100%','#059669'],['A','80–89%','#34d399'],['B','70–79%','#0284c7'],['C','60–69%','#d97706'],['D','50–59%','#ea580c'],['F','< 50%','#be123c']].forEach(([g,r,c])=>{ %>
+          <div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:4px">
+            <span style="font-weight:700;color:<%= c %>;font-family:'JetBrains Mono',monospace"><%= g %></span>
+            <span style="color:#94a3b8"><%= r %></span>
+          </div>
+          <% }) %>
+        </div>
+      </div>
     </div>
   </div>
-
-  <script>
-    function calculateGrade() {
-      const marks = parseFloat(document.querySelector('[name="marks_obtained"]').value);
-      const max = parseFloat(document.querySelector('[name="max_marks"]').value) || 100;
-      const display = document.getElementById('gradeDisplay');
-      if (isNaN(marks)) { display.textContent = '--'; return; }
-      const pct = (marks / max) * 100;
-      if (pct >= 90)      { display.textContent = 'A+'; display.className = 'text-2xl font-bold text-green-700'; }
-      else if (pct >= 80) { display.textContent = 'A';  display.className = 'text-2xl font-bold text-green-600'; }
-      else if (pct >= 70) { display.textContent = 'B';  display.className = 'text-2xl font-bold text-blue-600'; }
-      else if (pct >= 60) { display.textContent = 'C';  display.className = 'text-2xl font-bold text-yellow-600'; }
-      else if (pct >= 50) { display.textContent = 'D';  display.className = 'text-2xl font-bold text-orange-500'; }
-      else                { display.textContent = 'F';  display.className = 'text-2xl font-bold text-red-500'; }
-    }
-  </script>
+</div>
+<%- include('../partials/scripts') %>
+<script>
+  const gd=[{min:90,g:'A+',c:'#059669',bg:'rgba(5,150,105,0.08)'},{min:80,g:'A',c:'#34d399',bg:'rgba(52,211,153,0.08)'},{min:70,g:'B',c:'#0284c7',bg:'rgba(2,132,199,0.08)'},{min:60,g:'C',c:'#d97706',bg:'rgba(217,119,6,0.08)'},{min:50,g:'D',c:'#ea580c',bg:'rgba(234,88,12,0.08)'},{min:0,g:'F',c:'#be123c',bg:'rgba(190,18,60,0.08)'}];
+  function calcGrade(){
+    const m=parseFloat(document.getElementById('marks_obtained').value);
+    const mx=parseFloat(document.getElementById('max_marks').value)||100;
+    const l=document.getElementById('grade-letter'),p=document.getElementById('grade-pct'),card=document.getElementById('grade-card');
+    if(isNaN(m)){l.textContent='--';l.style.color='#cbd5e1';p.textContent='Enter marks above';card.style.background='#f2f4f6';return;}
+    const pct=Math.round((m/mx)*100);
+    const gr=gd.find(x=>pct>=x.min)||gd[5];
+    l.textContent=gr.g;l.style.color=gr.c;p.textContent=`${m}/${mx} = ${pct}%`;card.style.background=gr.bg;
+  }
+</script>
 </body>
 </html>
